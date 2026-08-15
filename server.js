@@ -10,6 +10,10 @@ const readingProgressRoutes = require(
 
 const followRoutes = require("./routes/followRoutes");
 
+const readingStatisticsRoutes = require(
+  "./routes/readingStatisticsRoutes"
+);
+
 const app = express();
 
 app.use(cors());
@@ -30,6 +34,12 @@ app.use(
 );
 
 app.use("/api", followRoutes);
+
+// Member 4 routes
+app.use(
+  "/api/reading-statistics",
+  readingStatisticsRoutes
+);
 
 const PORT = process.env.PORT || 3000;
 
