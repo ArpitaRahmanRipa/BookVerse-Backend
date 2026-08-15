@@ -1,4 +1,5 @@
 const axios = require("axios");
+const ReadingProgress = require("../models/ReadingProgress");
 
 const formatGoogleBook = (item) => {
     const info = item.volumeInfo || {};
@@ -45,11 +46,52 @@ const formatOpenLibraryBook = (book) => ({
         : ""
 });
 
+// Reader activity for one book
+const getReaderActivity = async (bookTitle) => {
+    const currentlyReading =
+        await ReadingProgress.countDocuments({
+            bookTitle: bookTitle,
+            status: "Currently Reading"
+        });
+
+    const completed =
+        await ReadingProgress.countDocuments({
+            bookTitle: bookTitle,
+            status: "Completed"
+        });
+
+    const totalReaders =
+        await ReadingProgress.countDocuments({
+            bookTitle: bookTitle
+        });
+
+    return {
+        currentlyReading,
+        completed,
+        totalReaders
+    };
+};
+
+// Search books
 const searchBooks = async (req, res) => {
     try {
-        const { title, author, isbn, genre, year, query } = req.query;
+        const {
+            title,
+            author,
+            isbn,
+            genre,
+            year,
+            query
+        } = req.query;
 
-        if (!title && !author && !isbn && !genre && !year && !query) {
+        if (
+            !title &&
+            !author &&
+            !isbn &&
+            !genre &&
+            !year &&
+            !query
+        ) {
             return res.status(400).json({
                 success: false,
                 message: "Provide a search value."
@@ -76,40 +118,54 @@ const searchBooks = async (req, res) => {
                 }
             );
 
-            const books = (response.data.items || []).map(formatGoogleBook);
+            const books =
+                (response.data.items || [])
+                    .map(formatGoogleBook);
 
             return res.json({
                 success: true,
                 source: "Google Books",
-                totalItems: response.data.totalItems || 0,
+                totalItems:
+                    response.data.totalItems || 0,
                 results: books.length,
                 books
             });
+
         } catch (googleError) {
+
             if (googleError.response?.status !== 429) {
                 throw googleError;
             }
 
-            const params = { limit: 20 };
+            const params = {
+                limit: 20
+            };
 
             if (title) params.title = title;
             if (author) params.author = author;
             if (isbn) params.isbn = isbn;
             if (genre) params.subject = genre;
             if (query) params.q = query;
-            if (year) params.q = `first_publish_year:${year}`;
+
+            if (year) {
+                params.q =
+                    `first_publish_year:${year}`;
+            }
 
             const response = await axios.get(
                 "https://openlibrary.org/search.json",
                 { params }
             );
 
-            let documents = response.data.docs || [];
+            let documents =
+                response.data.docs || [];
 
             if (year) {
                 documents = documents.filter(
                     (book) =>
-                        String(book.first_publish_year) === String(year)
+                        String(
+                            book.first_publish_year
+                        ) === String(year)
                 );
             }
 
@@ -128,63 +184,113 @@ const searchBooks = async (req, res) => {
                 books
             });
         }
+
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "Unable to search for books.",
+            message:
+                "Unable to search for books.",
             error: error.message
         });
     }
 };
 
+// Get one book details
 const getBookDetails = async (req, res) => {
     try {
         const { id } = req.params;
 
+        // Open Library book
         if (id.startsWith("OL")) {
+
             const response = await axios.get(
                 `https://openlibrary.org/works/${id}.json`
             );
 
-            const book = response.data;
+            const apiBook = response.data;
 
             const description =
-                typeof book.description === "string"
-                    ? book.description
-                    : book.description?.value || "No description available.";
+                typeof apiBook.description === "string"
+                    ? apiBook.description
+                    : apiBook.description?.value ||
+                      "No description available.";
 
-            const coverId = book.covers?.[0];
+            const coverId =
+                apiBook.covers?.[0];
+
+            const book = {
+                googleBookId: null,
+                openLibraryId: id,
+                title:
+                    apiBook.title ||
+                    "Unknown title",
+                authors: [],
+                description,
+                isbn: null,
+                publicationDate:
+                    apiBook.first_publish_date ||
+                    null,
+                pageCount: 0,
+                language: null,
+                categories:
+                    apiBook.subjects || [],
+                coverImage: coverId
+                    ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
+                    : "",
+                averageRating: 0,
+                ratingsCount: 0,
+                previewLink:
+                    `https://openlibrary.org/works/${id}`
+            };
+
+            const readerActivity =
+                await getReaderActivity(
+                    book.title
+                );
 
             return res.json({
                 success: true,
                 source: "Open Library",
-                book: {
-                    openLibraryId: id,
-                    title: book.title || "Unknown title",
-                    description,
-                    publicationDate: book.first_publish_date || null,
-                    categories: book.subjects || [],
-                    coverImage: coverId
-                        ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
-                        : "",
-                    previewLink:
-                        `https://openlibrary.org/works/${id}`
-                }
+                book,
+                readerActivity,
+                shelfOptions: [
+                    "Want to Read",
+                    "Currently Reading",
+                    "Read"
+                ]
             });
         }
 
+        // Google Books book
         const response = await axios.get(
             `${process.env.GOOGLE_BOOKS_API}/volumes/${id}`
         );
 
+        const book =
+            formatGoogleBook(response.data);
+
+        const readerActivity =
+            await getReaderActivity(
+                book.title
+            );
+
         return res.json({
             success: true,
             source: "Google Books",
-            book: formatGoogleBook(response.data)
+            book,
+            readerActivity,
+            shelfOptions: [
+                "Want to Read",
+                "Currently Reading",
+                "Read"
+            ]
         });
+
     } catch (error) {
         return res.status(
-            error.response?.status === 404 ? 404 : 500
+            error.response?.status === 404
+                ? 404
+                : 500
         ).json({
             success: false,
             message:

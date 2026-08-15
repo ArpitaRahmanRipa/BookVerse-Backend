@@ -10,6 +10,10 @@ const readingProgressRoutes = require(
 
 const followRoutes = require("./routes/followRoutes");
 
+// Member 2 Book Search and Book Details routes
+const bookRoutes = require("./routes/bookRoutes");
+const shelfRoutes = require("./routes/shelfRoutes");
+
 const app = express();
 
 app.use(cors());
@@ -30,6 +34,10 @@ app.use(
 );
 
 app.use("/api", followRoutes);
+
+// Member 2 routes
+app.use("/api/books", bookRoutes);
+app.use("/api/shelves", shelfRoutes);
 
 const PORT = process.env.PORT || 3000;
 
