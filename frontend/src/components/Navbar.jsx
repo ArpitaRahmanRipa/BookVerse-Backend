@@ -33,6 +33,13 @@ export default function Navbar() {
               We will add these only when
               their actual pages are integrated.
           */}
+          {/* Member 2 - Book Search */}
+          <NavLink
+            to="/books"
+            className={getLinkClass}
+          >
+            Books
+          </NavLink>
 
           {/* Member 3 - Reading Progress */}
           <NavLink

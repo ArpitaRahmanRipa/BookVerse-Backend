@@ -23,9 +23,15 @@ const followRoutes = require(
 // Member 1:
 // const dashboardRoutes = require("./routes/dashboardRoutes");
 //
-// Member 2:
-// const bookRoutes = require("./routes/bookRoutes");
-//
+// Member 2 - Book Search & Book Details
+const bookRoutes = require(
+  "./routes/bookRoutes"
+);
+
+const shelfRoutes = require(
+  "./routes/shelfRoutes"
+);
+
 // Member 4:
 // const mediaRoutes = require("./routes/mediaRoutes");
 
@@ -74,9 +80,18 @@ app.use("/api", followRoutes);
 // Member 1:
 // app.use("/api/dashboard", dashboardRoutes);
 //
-// Member 2:
-// app.use("/api/books", bookRoutes);
-//
+// Member 2 - Book Search & Book Details
+app.use(
+  "/api/books",
+  bookRoutes
+);
+
+// Temporary shelf integration.
+// Member 1 may later reuse/replace this.
+app.use(
+  "/api/shelves",
+  shelfRoutes
+);
 // Member 4:
 // app.use("/api/media", mediaRoutes);
 

@@ -5,6 +5,9 @@ import {
 } from "react-router";
 
 import Navbar from "./components/Navbar";
+// Member 2 - Book Search & Details
+import SearchBooks from "./pages/SearchBooks";
+import BookDetails from "./pages/BookDetails";
 
 // Member 3 - Reading Progress & Diary
 import ReadingDiaryPage from "./pages/ReadingDiaryPage";
@@ -18,6 +21,16 @@ export default function App() {
       <Routes>
         {/* Temporary home.
             Later this can become Member 1's Dashboard. */}
+        {/* Member 2 - Book Search & Details */}
+        <Route
+          path="/books"
+          element={<SearchBooks />}
+        />
+
+        <Route
+          path="/books/:id"
+          element={<BookDetails />}
+        />
         <Route
           path="/"
           element={
