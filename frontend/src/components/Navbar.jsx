@@ -14,6 +14,7 @@ export default function Navbar() {
     <header className="bg-[#352522] text-white shadow-lg">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between">
 
+        {/* BookVerse Home */}
         <NavLink
           to="/"
           className="flex items-center gap-3 text-xl font-bold"
@@ -24,13 +25,24 @@ export default function Navbar() {
 
         <nav className="flex flex-wrap items-center gap-2">
 
+          {/* Future navigation:
+              Member 1 - Dashboard / Shelves
+              Member 2 - Books
+              Member 4 - Profile
+
+              We will add these only when
+              their actual pages are integrated.
+          */}
+
+          {/* Member 3 - Reading Progress */}
           <NavLink
-            to="/"
+            to="/reading-progress"
             className={getLinkClass}
           >
             Reading Progress
           </NavLink>
 
+          {/* Member 3 - Reading Diary */}
           <NavLink
             to="/reading-diary"
             className={getLinkClass}
