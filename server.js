@@ -32,8 +32,13 @@ const shelfRoutes = require(
   "./routes/shelfRoutes"
 );
 
-// Member 4:
-// const mediaRoutes = require("./routes/mediaRoutes");
+// Member 4 - Profile Picture & Media Upload
+const mediaRoutes = require("./routes/mediaRoutes");
+
+// Member 4 - AI Book Recommendation Assistant
+const recommendationRoutes = require(
+  "./routes/recommendationRoutes"
+);
 
 
 const app = express();
@@ -92,8 +97,14 @@ app.use(
   "/api/shelves",
   shelfRoutes
 );
-// Member 4:
-// app.use("/api/media", mediaRoutes);
+// Member 4 - Profile Picture & Media Upload
+app.use("/api/media", mediaRoutes);
+
+// Member 4 - AI Book Recommendation Assistant
+app.use(
+  "/api/recommendations",
+  recommendationRoutes
+);
 
 
 // ==============================

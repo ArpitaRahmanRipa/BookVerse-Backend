@@ -13,6 +13,10 @@ import BookDetails from "./pages/BookDetails";
 import ReadingDiaryPage from "./pages/ReadingDiaryPage";
 import ReadingProgressPage from "./pages/ReadingProgressPage";
 
+// Member 4 - Profile Media & AI Recommendations
+import ProfileMediaPage from "./pages/ProfileMediaPage";
+import RecommendationPage from "./pages/RecommendationPage";
+
 export default function App() {
   return (
     <div className="min-h-screen bg-[#f7f2e9]">
@@ -50,6 +54,17 @@ export default function App() {
         <Route
           path="/reading-diary"
           element={<ReadingDiaryPage />}
+        />
+
+        {/* Member 4 - Profile Media & AI Recommendations */}
+        <Route
+          path="/profile"
+          element={<ProfileMediaPage />}
+        />
+
+        <Route
+          path="/recommendations"
+          element={<RecommendationPage />}
         />
 
         {/* Future integrations:

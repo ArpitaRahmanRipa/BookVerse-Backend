@@ -57,6 +57,22 @@ export default function Navbar() {
             Reading Diary
           </NavLink>
 
+          {/* Member 4 - Profile Media */}
+          <NavLink
+            to="/profile"
+            className={getLinkClass}
+          >
+            Profile
+          </NavLink>
+
+          {/* Member 4 - AI Recommendations */}
+          <NavLink
+            to="/recommendations"
+            className={getLinkClass}
+          >
+            Recommendations
+          </NavLink>
+
         </nav>
       </div>
     </header>
