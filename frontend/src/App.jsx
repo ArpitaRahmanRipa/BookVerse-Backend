@@ -12,6 +12,7 @@ import BookDetails from "./pages/BookDetails";
 // Member 3 - Reading Progress & Diary
 import ReadingDiaryPage from "./pages/ReadingDiaryPage";
 import ReadingProgressPage from "./pages/ReadingProgressPage";
+import ReaderConnectionsPage from "./pages/ReaderConnectionsPage";
 
 export default function App() {
   return (
@@ -51,6 +52,10 @@ export default function App() {
           path="/reading-diary"
           element={<ReadingDiaryPage />}
         />
+      <Route
+        path="/connections"
+        element={<ReaderConnectionsPage />}
+      />
 
         {/* Future integrations:
 
