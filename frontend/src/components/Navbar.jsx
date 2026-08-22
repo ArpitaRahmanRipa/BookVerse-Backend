@@ -56,7 +56,12 @@ export default function Navbar() {
           >
             Reading Diary
           </NavLink>
-
+          <NavLink
+            to="/connections"
+            className={getLinkClass}
+          >
+            Connections
+          </NavLink>
         </nav>
       </div>
     </header>
