@@ -34,6 +34,7 @@ import EditReadingList from "./pages/EditReadingList";
 
 import ReadingDiaryPage from "./pages/ReadingDiaryPage";
 import ReadingProgressPage from "./pages/ReadingProgressPage";
+import ReaderConnectionsPage from "./pages/ReaderConnectionsPage";
 
 
 
@@ -197,6 +198,10 @@ export default function App() {
           element={<ReadingDiaryPage />}
 
         />
+      <Route
+        path="/connections"
+        element={<ReaderConnectionsPage />}
+      />
 
 
 
