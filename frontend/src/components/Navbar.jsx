@@ -25,20 +25,20 @@ export default function Navbar() {
 
         <nav className="flex flex-wrap items-center gap-2">
 
-          {/* Future navigation:
-              Member 1 - Dashboard / Shelves
-              Member 2 - Books
-              Member 4 - Profile
-
-              We will add these only when
-              their actual pages are integrated.
-          */}
           {/* Member 2 - Book Search */}
           <NavLink
             to="/books"
             className={getLinkClass}
           >
             Books
+          </NavLink>
+
+          {/* Member 2 - Custom Reading Lists */}
+          <NavLink
+            to="/reading-lists"
+            className={getLinkClass}
+          >
+            Reading Lists
           </NavLink>
 
           {/* Member 3 - Reading Progress */}
