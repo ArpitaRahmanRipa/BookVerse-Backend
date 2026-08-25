@@ -9,12 +9,16 @@ const connectDB = require("./config/db");
 // Route Imports
 // ==============================
 
+
 // Member 3 - Reading Progress & Diary
+
 const readingProgressRoutes = require(
   "./routes/readingProgressRoutes"
 );
 
+
 // Existing Follow Feature
+
 const followRoutes = require(
   "./routes/followRoutes"
 );
@@ -28,6 +32,7 @@ const followRoutes = require(
 const bookRoutes = require(
   "./routes/bookRoutes"
 );
+
 
 const shelfRoutes = require(
   "./routes/shelfRoutes"
@@ -45,19 +50,41 @@ const readingListRoutes = require(
 
 
 // ==============================
+// Member 2 - Module 3 Feature 2
+// Review Comments & Like System
+// ==============================
+
+const reviewRoutes = require(
+  "./routes/reviewRoutes"
+);
+
+
+// ==============================
+// Module 3 Enhancement
+// Notification System
+// ==============================
+
+const notificationRoutes = require(
+  "./routes/notificationRoutes"
+);
+
+
+
+// ==============================
 // Create Express App
 // ==============================
 
 const app = express();
 
 
+
 // ==============================
 // Port
 // ==============================
 
-// Use PORT from .env if provided.
-// Otherwise BookVerse backend will run on 9208.
-const PORT = process.env.PORT || 9208;
+const PORT =
+  process.env.PORT || 9208;
+
 
 
 // ==============================
@@ -69,17 +96,26 @@ app.use(cors());
 app.use(express.json());
 
 
+
 // ==============================
 // Test Route
 // ==============================
 
 app.get("/", (req, res) => {
+
   res.status(200).json({
+
     success: true,
-    message: "BookVerse Backend API is running",
-    port: PORT,
+
+    message:
+      "BookVerse Backend API is running",
+
+    port: PORT
+
   });
+
 });
+
 
 
 // ==============================
@@ -97,6 +133,7 @@ app.use(
 );
 
 
+
 // ------------------------------
 // Existing Follow Feature
 // ------------------------------
@@ -107,9 +144,10 @@ app.use(
 );
 
 
+
 // ------------------------------
 // Member 2 - Module 1 Feature 2
-// Book Search & Book Details
+// Book Search & Details
 // ------------------------------
 
 app.use(
@@ -118,13 +156,16 @@ app.use(
 );
 
 
-// Temporary shelf integration.
-// Existing Module 1 functionality.
-// Do not remove.
+
+// ------------------------------
+// Shelf Management
+// ------------------------------
+
 app.use(
   "/api/shelves",
   shelfRoutes
 );
+
 
 
 // ------------------------------
@@ -138,30 +179,59 @@ app.use(
 );
 
 
+
+// ------------------------------
+// Member 2 - Module 3 Feature 2
+// Review Comments & Like System
+// ------------------------------
+
+app.use(
+  "/api/reviews",
+  reviewRoutes
+);
+
+
+
+// ------------------------------
+// Notification System
+// ------------------------------
+
+app.use(
+  "/api/notifications",
+  notificationRoutes
+);
+
+
+
 // ==============================
 // Future Integrations
 // ==============================
 
-// Member 1:
+
+// Member 1 Dashboard
+//
 // const dashboardRoutes = require(
 //   "./routes/dashboardRoutes"
 // );
-
+//
 // app.use(
 //   "/api/dashboard",
 //   dashboardRoutes
 // );
 
 
-// Member 4:
+
+// Member 4 Media
+//
 // const mediaRoutes = require(
 //   "./routes/mediaRoutes"
 // );
-
+//
 // app.use(
 //   "/api/media",
 //   mediaRoutes
 // );
+
 
 
 // ==============================
@@ -169,36 +239,62 @@ app.use(
 // ==============================
 
 const startServer = async () => {
+
   try {
-    // Connect MongoDB first
+
+
     await connectDB();
 
-    // Start Express server
+
     app.listen(PORT, () => {
+
+
       console.log(
         `Server is running on http://127.0.0.1:${PORT}`
       );
+
 
       console.log(
         `Book Search API: http://127.0.0.1:${PORT}/api/books`
       );
 
+
       console.log(
         `Reading Lists API: http://127.0.0.1:${PORT}/api/readinglists`
       );
+
+
+      console.log(
+        `Reviews API: http://127.0.0.1:${PORT}/api/reviews`
+      );
+
+
+      console.log(
+        `Notifications API: http://127.0.0.1:${PORT}/api/notifications`
+      );
+
+
     });
 
+
   } catch (error) {
+
 
     console.error(
       "Server could not start:",
       error.message
     );
 
+
     process.exit(1);
+
+
   }
+
 };
 
 
-// Start BookVerse backend
+
+// Start Backend
+
 startServer();

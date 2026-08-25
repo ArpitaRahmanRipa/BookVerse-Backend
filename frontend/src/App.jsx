@@ -25,6 +25,15 @@ import CreateReadingList from "./pages/CreateReadingList";
 import MyReadingLists from "./pages/MyReadingLists";
 import ReadingListDetails from "./pages/ReadingListDetails";
 import EditReadingList from "./pages/EditReadingList";
+import Review from "./pages/Review";
+
+
+
+// ==================================
+// Notifications
+// ==================================
+
+import Notifications from "./pages/Notifications";
 
 
 
@@ -35,6 +44,7 @@ import EditReadingList from "./pages/EditReadingList";
 import ReadingDiaryPage from "./pages/ReadingDiaryPage";
 import ReadingProgressPage from "./pages/ReadingProgressPage";
 import ReaderConnectionsPage from "./pages/ReaderConnectionsPage";
+
 
 
 
@@ -92,8 +102,6 @@ export default function App() {
 
 
 
-        {/* Public Reading Lists */}
-
         <Route
 
           path="/reading-lists"
@@ -105,8 +113,6 @@ export default function App() {
 
 
 
-
-        {/* Create Reading List */}
 
         <Route
 
@@ -120,10 +126,6 @@ export default function App() {
 
 
 
-
-
-        {/* My Reading Lists */}
-
         <Route
 
           path="/reading-lists/mine"
@@ -136,10 +138,6 @@ export default function App() {
 
 
 
-
-
-        {/* Reading List Details */}
-
         <Route
 
           path="/reading-lists/:id"
@@ -151,11 +149,6 @@ export default function App() {
 
 
 
-
-
-
-        {/* STEP 60 */}
-        {/* Edit Reading List */}
 
         <Route
 
@@ -198,11 +191,60 @@ export default function App() {
           element={<ReadingDiaryPage />}
 
         />
-      <Route
-        path="/connections"
-        element={<ReaderConnectionsPage />}
-      />
 
+
+
+
+
+        <Route
+
+          path="/connections"
+
+          element={<ReaderConnectionsPage />}
+
+        />
+
+
+
+
+
+
+
+
+
+        {/* ================================= */}
+        {/* Review */}
+        {/* ================================= */}
+
+
+        <Route
+
+          path="/reviews"
+
+          element={<Review />}
+
+        />
+
+
+
+
+
+
+
+
+
+        {/* ================================= */}
+        {/* Notifications */}
+        {/* ================================= */}
+
+
+        <Route
+
+          path="/notifications"
+
+          element={<Notifications />}
+
+        />
 
 
 
