@@ -1,5 +1,8 @@
 const Follow = require("../models/Follow");
 const ReadingProgress = require("../models/ReadingProgress");
+const {
+  createNotificationRecord,
+} = require("./notificationController");
 
 // ==============================
 // Follow a reader
@@ -9,6 +12,7 @@ const followReader = async (req, res) => {
   try {
     const {
       userId,
+      userName,
       targetUserId,
       targetName,
       targetUsername,
@@ -46,6 +50,30 @@ const followReader = async (req, res) => {
       targetName: targetName || "",
       targetUsername: targetUsername || "",
     });
+
+    // Automatically notify the reader who was followed.
+    try {
+      const followerDisplayName =
+        userName || userId;
+
+      await createNotificationRecord({
+        recipientId: targetUserId,
+        actorId: userId,
+        actorName: followerDisplayName,
+        type: "follow",
+        message: `${followerDisplayName} started following you.`,
+        relatedId: userId,
+        relatedType: "user",
+        link: "/connections",
+      });
+    } catch (notificationError) {
+      // The Follow should still succeed even if
+      // creating the notification fails.
+      console.error(
+        "Failed to create follow notification:",
+        notificationError.message
+      );
+    }
 
     return res.status(201).json({
       message: "Reader followed successfully",

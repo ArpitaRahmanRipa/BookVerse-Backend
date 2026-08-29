@@ -125,3 +125,17 @@ export const deleteReadingProgress = async (
 
   return handleResponse(response);
 };
+// Check whether the user has inactive reading
+// progress records that need reminders
+export const checkReadingReminders = async (
+  userId
+) => {
+  const response = await fetch(
+    `${API_BASE_URL}/reading-progress/user/${userId}/check-reminders`,
+    {
+      method: "POST",
+    }
+  );
+
+  return handleResponse(response);
+};

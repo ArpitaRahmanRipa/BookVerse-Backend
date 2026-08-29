@@ -3,6 +3,7 @@ import { Link } from "react-router";
 
 import {
   addDiaryEntry,
+  checkReadingReminders,
   createReadingProgress,
   getUserProgress,
   updateReadingProgress,
@@ -183,6 +184,27 @@ export default function ReadingProgressPage() {
 
   useEffect(() => {
     loadProgress();
+
+    const runReadingReminderCheck = async () => {
+      try {
+        const result =
+          await checkReadingReminders(USER_ID);
+
+        console.log(
+          "Reading reminder check:",
+          result
+        );
+      } catch (error) {
+        // Reminder failure should not stop
+        // the Reading Progress page from working.
+        console.error(
+          "Failed to check reading reminders:",
+          error.message
+        );
+      }
+    };
+
+    runReadingReminderCheck();
   }, []);
 
   useEffect(() => {
