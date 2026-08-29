@@ -18,7 +18,7 @@ const readingProgressRoutes = require(
 const followRoutes = require(
   "./routes/followRoutes"
 );
-
+const notificationRoutes = require("./routes/notificationRoutes");
 
 // ==============================
 // Member 2 - Module 1 Feature 2
@@ -106,7 +106,7 @@ app.use(
   followRoutes
 );
 
-
+app.use("/api/notifications", notificationRoutes);
 // ------------------------------
 // Member 2 - Module 1 Feature 2
 // Book Search & Book Details
