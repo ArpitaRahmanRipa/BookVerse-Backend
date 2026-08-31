@@ -17,6 +17,10 @@ import ReadingProgressPage from "./pages/ReadingProgressPage";
 import ProfileMediaPage from "./pages/ProfileMediaPage";
 import RecommendationPage from "./pages/RecommendationPage";
 
+// Member 4 - Reading Goals & Admin Analytics
+import ReadingGoalsPage from "./pages/ReadingGoalsPage";
+import AdminAnalyticsPage from "./pages/AdminAnalyticsPage";
+
 export default function App() {
   return (
     <div className="min-h-screen bg-[#f7f2e9]">
@@ -65,6 +69,17 @@ export default function App() {
         <Route
           path="/recommendations"
           element={<RecommendationPage />}
+        />
+
+        {/* Member 4 - Reading Goals & Admin Analytics */}
+        <Route
+          path="/reading-goals"
+          element={<ReadingGoalsPage />}
+        />
+
+        <Route
+          path="/admin"
+          element={<AdminAnalyticsPage />}
         />
 
         {/* Future integrations:

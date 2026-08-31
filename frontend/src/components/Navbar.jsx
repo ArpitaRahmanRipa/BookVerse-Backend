@@ -73,6 +73,22 @@ export default function Navbar() {
             Recommendations
           </NavLink>
 
+          {/* Member 4 - Reading Goals */}
+          <NavLink
+            to="/reading-goals"
+            className={getLinkClass}
+          >
+            Reading Goals
+          </NavLink>
+
+          {/* Member 4 - Admin Analytics */}
+          <NavLink
+            to="/admin"
+            className={getLinkClass}
+          >
+            Admin
+          </NavLink>
+
         </nav>
       </div>
     </header>

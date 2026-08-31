@@ -40,6 +40,14 @@ const recommendationRoutes = require(
   "./routes/recommendationRoutes"
 );
 
+// Member 4 - Reading Goals and Challenge Tracking
+const readingGoalRoutes = require(
+  "./routes/readingGoalRoutes"
+);
+
+// Member 4 - Admin Analytics and Category Management
+const adminRoutes = require("./routes/adminRoutes");
+
 
 const app = express();
 
@@ -105,6 +113,15 @@ app.use(
   "/api/recommendations",
   recommendationRoutes
 );
+
+// Member 4 - Reading Goals and Challenge Tracking
+app.use(
+  "/api/reading-goals",
+  readingGoalRoutes
+);
+
+// Member 4 - Admin Analytics and Category Management
+app.use("/api/admin", adminRoutes);
 
 
 // ==============================
