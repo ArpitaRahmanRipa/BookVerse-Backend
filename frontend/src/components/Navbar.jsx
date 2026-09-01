@@ -52,8 +52,6 @@ export default function Navbar() {
     loadUnreadCount();
 
 
-    // Refresh notification badge every 5 seconds
-
     const intervalId = setInterval(
       loadUnreadCount,
       5000
@@ -95,7 +93,9 @@ export default function Navbar() {
 
 
 
+
         <nav className="flex flex-wrap items-center gap-2">
+
 
 
           {/* Member 2 - Book Search */}
@@ -109,7 +109,8 @@ export default function Navbar() {
 
 
 
-          {/* Member 2 - Custom Reading Lists */}
+
+          {/* Member 2 - Reading Lists */}
 
           <NavLink
             to="/reading-lists"
@@ -117,6 +118,7 @@ export default function Navbar() {
           >
             Reading Lists
           </NavLink>
+
 
 
 
@@ -131,6 +133,7 @@ export default function Navbar() {
 
 
 
+
           {/* Member 3 - Reading Diary */}
 
           <NavLink
@@ -142,6 +145,7 @@ export default function Navbar() {
 
 
 
+
           {/* Reader Connections */}
 
           <NavLink
@@ -150,6 +154,7 @@ export default function Navbar() {
           >
             Connections
           </NavLink>
+
 
 
 
@@ -187,19 +192,38 @@ export default function Navbar() {
 
 
 
-          {/* ================================= */}
           {/* Member 2 - Module 4 Feature 2 */}
-          {/* Yearly Reading Wrapped */}
-          {/* ================================= */}
-
 
           <NavLink
             to="/reading-wrapped"
             className={getLinkClass}
           >
-
             Reading Wrapped
+          </NavLink>
 
+
+
+
+
+          {/* Reporting Feature */}
+
+          <NavLink
+            to="/report"
+            className={getLinkClass}
+          >
+            Report
+          </NavLink>
+
+
+
+
+          {/* Moderation Dashboard */}
+
+          <NavLink
+            to="/moderation"
+            className={getLinkClass}
+          >
+            Moderation
           </NavLink>
 
 

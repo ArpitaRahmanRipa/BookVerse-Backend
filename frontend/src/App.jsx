@@ -38,6 +38,8 @@ import ReadingDiaryPage from "./pages/ReadingDiaryPage";
 import ReadingProgressPage from "./pages/ReadingProgressPage";
 import ReaderConnectionsPage from "./pages/ReaderConnectionsPage";
 import NotificationsPage from "./pages/NotificationsPage";
+import ReportContentPage from "./pages/ReportContentPage";
+import ModerationDashboard from "./pages/ModerationDashboard";
 
 
 
@@ -47,7 +49,6 @@ import NotificationsPage from "./pages/NotificationsPage";
 // ==================================
 
 import ReadingWrapped from "./pages/ReadingWrapped";
-
 
 
 
@@ -69,7 +70,7 @@ export default function App() {
 
 
         {/* ================================= */}
-        {/* Member 2 - Book Search & Details */}
+        {/* Member 2 - Book Search */}
         {/* ================================= */}
 
 
@@ -127,9 +128,8 @@ export default function App() {
 
 
 
-
         {/* ================================= */}
-        {/* Member 3 Features */}
+        {/* Member 3 - Reading Progress */}
         {/* ================================= */}
 
 
@@ -160,6 +160,25 @@ export default function App() {
 
 
 
+        {/* ================================= */}
+        {/* Member 3 - Reporting & Moderation */}
+        {/* ================================= */}
+
+
+        <Route
+          path="/report"
+          element={<ReportContentPage />}
+        />
+
+
+        <Route
+          path="/moderation"
+          element={<ModerationDashboard />}
+        />
+
+
+
+
 
 
         {/* ================================= */}
@@ -185,20 +204,14 @@ export default function App() {
 
 
         <Route
-
           path="/"
-
           element={
-
             <Navigate
               to="/reading-wrapped"
               replace
             />
-
           }
-
         />
-
 
 
 
@@ -211,27 +224,21 @@ export default function App() {
 
 
         <Route
-
           path="*"
-
           element={
-
             <Navigate
               to="/reading-wrapped"
               replace
             />
-
           }
-
         />
 
 
       </Routes>
 
 
-
     </div>
 
   );
 
-}
+}git status
