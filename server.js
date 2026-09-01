@@ -11,32 +11,27 @@ const connectDB = require("./config/db");
 
 
 // Member 3 - Reading Progress & Diary
-
 const readingProgressRoutes = require(
   "./routes/readingProgressRoutes"
 );
 
 
 // Existing Follow Feature
-
 const followRoutes = require(
   "./routes/followRoutes"
 );
 
 
 // Notifications
-
 const notificationRoutes = require(
   "./routes/notificationRoutes"
 );
 
 
 // Report Feature
-
 const reportRoutes = require(
   "./routes/reportRoutes"
 );
-
 
 
 // ==============================
@@ -53,24 +48,34 @@ const shelfRoutes = require(
   "./routes/shelfRoutes"
 );
 
-<<<<<<< HEAD
-=======
-// Member 4 - Profile Picture & Media Upload
-const mediaRoutes = require("./routes/mediaRoutes");
 
-// Member 4 - AI Book Recommendation Assistant
+// ==============================
+// Member 4 Features
+// ==============================
+
+// Profile Picture & Media Upload
+const mediaRoutes = require(
+  "./routes/mediaRoutes"
+);
+
+
+// AI Book Recommendation Assistant
 const recommendationRoutes = require(
   "./routes/recommendationRoutes"
 );
 
-// Member 4 - Reading Goals and Challenge Tracking
+
+// Reading Goals and Challenge Tracking
 const readingGoalRoutes = require(
   "./routes/readingGoalRoutes"
 );
 
-// Member 4 - Admin Analytics and Category Management
-const adminRoutes = require("./routes/adminRoutes");
->>>>>>> origin/main
+
+// Admin Analytics and Category Management
+const adminRoutes = require(
+  "./routes/adminRoutes"
+);
+
 
 
 // ==============================
@@ -122,7 +127,6 @@ app.use(express.json());
 
 
 
-
 // ==============================
 // Test Route
 // ==============================
@@ -144,16 +148,13 @@ app.get("/", (req, res) => {
 
 
 
-
 // ==============================
 // Feature Routes
 // ==============================
 
 
 
-// ------------------------------
 // Member 3 - Reading Progress
-// ------------------------------
 
 app.use(
   "/api/reading-progress",
@@ -162,9 +163,7 @@ app.use(
 
 
 
-// ------------------------------
 // Follow Feature
-// ------------------------------
 
 app.use(
   "/api",
@@ -173,9 +172,7 @@ app.use(
 
 
 
-// ------------------------------
 // Notifications
-// ------------------------------
 
 app.use(
   "/api/notifications",
@@ -184,9 +181,7 @@ app.use(
 
 
 
-// ------------------------------
-// Report Feature
-// ------------------------------
+// Reports
 
 app.use(
   "/api/reports",
@@ -195,10 +190,12 @@ app.use(
 
 
 
+// ==============================
+// Member 2 Features
+// ==============================
 
-// ------------------------------
-// Member 2 - Book Search
-// ------------------------------
+
+// Book Search
 
 app.use(
   "/api/books",
@@ -206,24 +203,15 @@ app.use(
 );
 
 
-
-
-// ------------------------------
 // Shelves
-// ------------------------------
 
 app.use(
   "/api/shelves",
   shelfRoutes
 );
-<<<<<<< HEAD
 
 
-
-
-// ------------------------------
-// Member 2 - Reading Lists
-// ------------------------------
+// Reading Lists
 
 app.use(
   "/api/readinglists",
@@ -231,11 +219,7 @@ app.use(
 );
 
 
-
-
-// ------------------------------
-// Member 2 - Reading Wrapped
-// ------------------------------
+// Reading Wrapped
 
 app.use(
   "/api/reading-wrapped",
@@ -244,57 +228,41 @@ app.use(
 
 
 
+// ==============================
+// Member 4 Features
+// ==============================
 
-=======
-// Member 4 - Profile Picture & Media Upload
-app.use("/api/media", mediaRoutes);
 
-// Member 4 - AI Book Recommendation Assistant
+// Media Upload
+
+app.use(
+  "/api/media",
+  mediaRoutes
+);
+
+
+// Recommendations
+
 app.use(
   "/api/recommendations",
   recommendationRoutes
 );
 
-// Member 4 - Reading Goals and Challenge Tracking
+
+// Reading Goals
+
 app.use(
   "/api/reading-goals",
   readingGoalRoutes
 );
 
-// Member 4 - Admin Analytics and Category Management
-app.use("/api/admin", adminRoutes);
->>>>>>> origin/main
 
+// Admin
 
-// ==============================
-// Future Integrations
-// ==============================
-
-
-// Member 1:
-// const dashboardRoutes = require(
-//   "./routes/dashboardRoutes"
-// );
-
-// app.use(
-//   "/api/dashboard",
-//   dashboardRoutes
-// );
-
-
-
-// Member 4:
-// const mediaRoutes = require(
-//   "./routes/mediaRoutes"
-// );
-
-// app.use(
-//   "/api/media",
-//   mediaRoutes
-// );
-
-
-
+app.use(
+  "/api/admin",
+  adminRoutes
+);
 
 
 
@@ -306,9 +274,7 @@ const startServer = async () => {
 
   try {
 
-
     await connectDB();
-
 
 
     app.listen(PORT, () => {
@@ -359,7 +325,6 @@ const startServer = async () => {
 };
 
 
-
-// Start BookVerse Backend
+// Start Backend
 
 startServer();
