@@ -8,7 +8,8 @@ import Navbar from "./components/Navbar";
 
 
 // ==================================
-// Member 2 - Book Search & Details
+// Member 2 - Module 1 Feature 2
+// Book Search & Details
 // ==================================
 
 import SearchBooks from "./pages/SearchBooks";
@@ -17,7 +18,8 @@ import BookDetails from "./pages/BookDetails";
 
 
 // ==================================
-// Member 2 - Reading Lists
+// Member 2 - Module 2 Feature 2
+// Custom Reading Lists
 // ==================================
 
 import ReadingLists from "./pages/ReadingLists";
@@ -29,7 +31,7 @@ import EditReadingList from "./pages/EditReadingList";
 
 
 // ==================================
-// Member 3 - Reading Progress & Diary
+// Member 3 - Reading Progress & Social Features
 // ==================================
 
 import ReadingDiaryPage from "./pages/ReadingDiaryPage";
@@ -39,6 +41,14 @@ import NotificationsPage from "./pages/NotificationsPage";
 
 
 
+// ==================================
+// Member 2 - Module 4 Feature 2
+// Yearly Reading Wrapped
+// ==================================
+
+import ReadingWrapped from "./pages/ReadingWrapped";
+
+
 
 
 
@@ -46,7 +56,6 @@ export default function App() {
 
 
   return (
-
 
     <div className="min-h-screen bg-[#f7f2e9]">
 
@@ -60,29 +69,20 @@ export default function App() {
 
 
         {/* ================================= */}
-        {/* Member 2 - Book Search */}
+        {/* Member 2 - Book Search & Details */}
         {/* ================================= */}
 
 
         <Route
-
           path="/books"
-
           element={<SearchBooks />}
-
         />
-
 
 
         <Route
-
           path="/books/:id"
-
           element={<BookDetails />}
-
         />
-
-
 
 
 
@@ -93,78 +93,33 @@ export default function App() {
         {/* ================================= */}
 
 
-
-        {/* Public Reading Lists */}
-
         <Route
-
           path="/reading-lists"
-
           element={<ReadingLists />}
-
         />
 
 
-
-
-
-        {/* Create Reading List */}
-
         <Route
-
           path="/reading-lists/create"
-
           element={<CreateReadingList />}
-
         />
 
 
-
-
-
-
-
-        {/* My Reading Lists */}
-
         <Route
-
           path="/reading-lists/mine"
-
           element={<MyReadingLists />}
-
         />
 
 
-
-
-
-
-
-        {/* Reading List Details */}
-
         <Route
-
           path="/reading-lists/:id"
-
           element={<ReadingListDetails />}
-
         />
 
 
-
-
-
-
-
-        {/* STEP 60 */}
-        {/* Edit Reading List */}
-
         <Route
-
           path="/reading-lists/edit/:id"
-
           element={<EditReadingList />}
-
         />
 
 
@@ -173,43 +128,50 @@ export default function App() {
 
 
 
-
-
         {/* ================================= */}
-        {/* Member 3 - Reading Progress */}
+        {/* Member 3 Features */}
         {/* ================================= */}
-
 
 
         <Route
-
           path="/reading-progress"
-
           element={<ReadingProgressPage />}
-
         />
-
-
-
 
 
         <Route
-
           path="/reading-diary"
-
           element={<ReadingDiaryPage />}
-
         />
-      <Route
-        path="/connections"
-        element={<ReaderConnectionsPage />}
-      />
 
-      <Route
-        path="/notifications"
-        element={<NotificationsPage />}
-      />
 
+        <Route
+          path="/connections"
+          element={<ReaderConnectionsPage />}
+        />
+
+
+        <Route
+          path="/notifications"
+          element={<NotificationsPage />}
+        />
+
+
+
+
+
+
+
+        {/* ================================= */}
+        {/* Member 2 - Module 4 Feature 2 */}
+        {/* Yearly Reading Wrapped */}
+        {/* ================================= */}
+
+
+        <Route
+          path="/reading-wrapped"
+          element={<ReadingWrapped />}
+        />
 
 
 
@@ -222,7 +184,6 @@ export default function App() {
         {/* ================================= */}
 
 
-
         <Route
 
           path="/"
@@ -230,18 +191,13 @@ export default function App() {
           element={
 
             <Navigate
-
-              to="/reading-progress"
-
+              to="/reading-wrapped"
               replace
-
             />
 
           }
 
         />
-
-
 
 
 
@@ -254,7 +210,6 @@ export default function App() {
         {/* ================================= */}
 
 
-
         <Route
 
           path="*"
@@ -262,11 +217,8 @@ export default function App() {
           element={
 
             <Navigate
-
-              to="/reading-progress"
-
+              to="/reading-wrapped"
               replace
-
             />
 
           }
@@ -274,17 +226,12 @@ export default function App() {
         />
 
 
-
-
       </Routes>
-
 
 
 
     </div>
 
-
   );
-
 
 }

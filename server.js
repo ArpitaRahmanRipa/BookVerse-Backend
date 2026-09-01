@@ -4,7 +4,6 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 
-
 // ==============================
 // Route Imports
 // ==============================
@@ -18,7 +17,10 @@ const readingProgressRoutes = require(
 const followRoutes = require(
   "./routes/followRoutes"
 );
-const notificationRoutes = require("./routes/notificationRoutes");
+
+const notificationRoutes = require(
+  "./routes/notificationRoutes"
+);
 
 // ==============================
 // Member 2 - Module 1 Feature 2
@@ -33,7 +35,6 @@ const shelfRoutes = require(
   "./routes/shelfRoutes"
 );
 
-
 // ==============================
 // Member 2 - Module 2 Feature 2
 // Custom Reading Lists & Collections
@@ -43,13 +44,20 @@ const readingListRoutes = require(
   "./routes/readingListRoutes"
 );
 
+// ==============================
+// Member 2 - Module 4 Feature 2
+// Yearly Reading Wrapped
+// ==============================
+
+const readingWrappedRoutes = require(
+  "./routes/readingWrappedRoutes"
+);
 
 // ==============================
 // Create Express App
 // ==============================
 
 const app = express();
-
 
 // ==============================
 // Port
@@ -59,7 +67,6 @@ const app = express();
 // Otherwise BookVerse backend will run on 9208.
 const PORT = process.env.PORT || 9208;
 
-
 // ==============================
 // Middleware
 // ==============================
@@ -67,7 +74,6 @@ const PORT = process.env.PORT || 9208;
 app.use(cors());
 
 app.use(express.json());
-
 
 // ==============================
 // Test Route
@@ -81,11 +87,9 @@ app.get("/", (req, res) => {
   });
 });
 
-
 // ==============================
 // Feature Routes
 // ==============================
-
 
 // ------------------------------
 // Member 3 - Reading Progress
@@ -96,7 +100,6 @@ app.use(
   readingProgressRoutes
 );
 
-
 // ------------------------------
 // Existing Follow Feature
 // ------------------------------
@@ -106,7 +109,11 @@ app.use(
   followRoutes
 );
 
-app.use("/api/notifications", notificationRoutes);
+app.use(
+  "/api/notifications",
+  notificationRoutes
+);
+
 // ------------------------------
 // Member 2 - Module 1 Feature 2
 // Book Search & Book Details
@@ -117,15 +124,16 @@ app.use(
   bookRoutes
 );
 
-
-// Temporary shelf integration.
+// ------------------------------
+// Temporary shelf integration
 // Existing Module 1 functionality.
 // Do not remove.
+// ------------------------------
+
 app.use(
   "/api/shelves",
   shelfRoutes
 );
-
 
 // ------------------------------
 // Member 2 - Module 2 Feature 2
@@ -137,6 +145,15 @@ app.use(
   readingListRoutes
 );
 
+// ------------------------------
+// Member 2 - Module 4 Feature 2
+// Yearly Reading Wrapped
+// ------------------------------
+
+app.use(
+  "/api/reading-wrapped",
+  readingWrappedRoutes
+);
 
 // ==============================
 // Future Integrations
@@ -152,7 +169,6 @@ app.use(
 //   dashboardRoutes
 // );
 
-
 // Member 4:
 // const mediaRoutes = require(
 //   "./routes/mediaRoutes"
@@ -162,7 +178,6 @@ app.use(
 //   "/api/media",
 //   mediaRoutes
 // );
-
 
 // ==============================
 // Start Server
@@ -186,10 +201,13 @@ const startServer = async () => {
       console.log(
         `Reading Lists API: http://127.0.0.1:${PORT}/api/readinglists`
       );
+
+      console.log(
+        `Reading Wrapped API: http://127.0.0.1:${PORT}/api/reading-wrapped`
+      );
     });
 
   } catch (error) {
-
     console.error(
       "Server could not start:",
       error.message
@@ -199,6 +217,8 @@ const startServer = async () => {
   }
 };
 
-
+// ==============================
 // Start BookVerse backend
+// ==============================
+
 startServer();
