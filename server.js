@@ -53,6 +53,24 @@ const shelfRoutes = require(
   "./routes/shelfRoutes"
 );
 
+<<<<<<< HEAD
+=======
+// Member 4 - Profile Picture & Media Upload
+const mediaRoutes = require("./routes/mediaRoutes");
+
+// Member 4 - AI Book Recommendation Assistant
+const recommendationRoutes = require(
+  "./routes/recommendationRoutes"
+);
+
+// Member 4 - Reading Goals and Challenge Tracking
+const readingGoalRoutes = require(
+  "./routes/readingGoalRoutes"
+);
+
+// Member 4 - Admin Analytics and Category Management
+const adminRoutes = require("./routes/adminRoutes");
+>>>>>>> origin/main
 
 
 // ==============================
@@ -198,6 +216,7 @@ app.use(
   "/api/shelves",
   shelfRoutes
 );
+<<<<<<< HEAD
 
 
 
@@ -226,6 +245,25 @@ app.use(
 
 
 
+=======
+// Member 4 - Profile Picture & Media Upload
+app.use("/api/media", mediaRoutes);
+
+// Member 4 - AI Book Recommendation Assistant
+app.use(
+  "/api/recommendations",
+  recommendationRoutes
+);
+
+// Member 4 - Reading Goals and Challenge Tracking
+app.use(
+  "/api/reading-goals",
+  readingGoalRoutes
+);
+
+// Member 4 - Admin Analytics and Category Management
+app.use("/api/admin", adminRoutes);
+>>>>>>> origin/main
 
 
 // ==============================

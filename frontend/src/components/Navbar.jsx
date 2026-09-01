@@ -4,12 +4,14 @@ import { getUnreadCount } from "../services/notificationApi";
 
 
 const getLinkClass = ({ isActive }) => {
+
   const base =
     "rounded-xl px-4 py-2 text-sm font-semibold transition";
 
   return isActive
     ? `${base} bg-white/15 text-white`
     : `${base} text-stone-200 hover:bg-white/10 hover:text-white`;
+
 };
 
 
@@ -18,11 +20,14 @@ const USER_ID = "21201436";
 
 export default function Navbar() {
 
+
   const [unreadCount, setUnreadCount] =
     useState(0);
 
 
+
   useEffect(() => {
+
 
     const loadUnreadCount = async () => {
 
@@ -49,7 +54,9 @@ export default function Navbar() {
     };
 
 
+
     loadUnreadCount();
+
 
 
     const intervalId = setInterval(
@@ -58,12 +65,17 @@ export default function Navbar() {
     );
 
 
+
     return () => {
+
       clearInterval(intervalId);
+
     };
 
 
   }, []);
+
+
 
 
 
@@ -77,8 +89,11 @@ export default function Navbar() {
         {/* BookVerse Home */}
 
         <NavLink
+
           to="/"
+
           className="flex items-center gap-3 text-xl font-bold"
+
         >
 
           <span className="text-2xl">
@@ -89,7 +104,9 @@ export default function Navbar() {
             BookVerse
           </span>
 
+
         </NavLink>
+
 
 
 
@@ -109,7 +126,6 @@ export default function Navbar() {
 
 
 
-
           {/* Member 2 - Reading Lists */}
 
           <NavLink
@@ -118,6 +134,7 @@ export default function Navbar() {
           >
             Reading Lists
           </NavLink>
+
 
 
 
@@ -146,7 +163,8 @@ export default function Navbar() {
 
 
 
-          {/* Reader Connections */}
+
+          {/* Member 3 - Connections */}
 
           <NavLink
             to="/connections"
@@ -175,9 +193,11 @@ export default function Navbar() {
 
                 <span className="min-w-5 rounded-full bg-red-500 px-1.5 py-0.5 text-center text-xs font-bold text-white">
 
-                  {unreadCount > 99
-                    ? "99+"
-                    : unreadCount}
+                  {
+                    unreadCount > 99
+                      ? "99+"
+                      : unreadCount
+                  }
 
                 </span>
 
@@ -205,7 +225,7 @@ export default function Navbar() {
 
 
 
-          {/* Reporting Feature */}
+          {/* Report Feature */}
 
           <NavLink
             to="/report"
@@ -213,6 +233,7 @@ export default function Navbar() {
           >
             Report
           </NavLink>
+
 
 
 
@@ -228,10 +249,63 @@ export default function Navbar() {
 
 
 
+
+
+          {/* Member 4 - Profile Media */}
+
+          <NavLink
+            to="/profile"
+            className={getLinkClass}
+          >
+            Profile
+          </NavLink>
+
+
+
+
+
+          {/* Member 4 - AI Recommendations */}
+
+          <NavLink
+            to="/recommendations"
+            className={getLinkClass}
+          >
+            Recommendations
+          </NavLink>
+
+
+
+
+
+          {/* Member 4 - Reading Goals */}
+
+          <NavLink
+            to="/reading-goals"
+            className={getLinkClass}
+          >
+            Reading Goals
+          </NavLink>
+
+
+
+
+
+          {/* Member 4 - Admin Analytics */}
+
+          <NavLink
+            to="/admin"
+            className={getLinkClass}
+          >
+            Admin
+          </NavLink>
+
+
+
         </nav>
 
 
       </div>
+
 
     </header>
 
