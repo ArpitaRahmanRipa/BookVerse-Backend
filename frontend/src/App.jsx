@@ -36,6 +36,8 @@ import ReadingDiaryPage from "./pages/ReadingDiaryPage";
 import ReadingProgressPage from "./pages/ReadingProgressPage";
 import ReaderConnectionsPage from "./pages/ReaderConnectionsPage";
 import NotificationsPage from "./pages/NotificationsPage";
+import ReportContentPage from "./pages/ReportContentPage";
+import ModerationDashboard from "./pages/ModerationDashboard";
 
 
 
@@ -208,6 +210,16 @@ export default function App() {
       <Route
         path="/notifications"
         element={<NotificationsPage />}
+      />
+
+      <Route
+        path="/report"
+        element={<ReportContentPage />}
+      />
+
+      <Route
+        path="/moderation"
+        element={<ModerationDashboard />}
       />
 
 

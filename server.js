@@ -19,6 +19,7 @@ const followRoutes = require(
   "./routes/followRoutes"
 );
 const notificationRoutes = require("./routes/notificationRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 
 // ==============================
 // Member 2 - Module 1 Feature 2
@@ -107,6 +108,8 @@ app.use(
 );
 
 app.use("/api/notifications", notificationRoutes);
+
+app.use("/api/reports", reportRoutes);
 // ------------------------------
 // Member 2 - Module 1 Feature 2
 // Book Search & Book Details

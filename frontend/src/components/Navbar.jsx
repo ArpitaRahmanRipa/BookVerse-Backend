@@ -112,6 +112,19 @@ export default function Navbar() {
               )}
             </span>
           </NavLink>
+          <NavLink
+            to="/report"
+            className={getLinkClass}
+          >
+            Report
+          </NavLink>
+
+          <NavLink
+            to="/moderation"
+            className={getLinkClass}
+          >
+            Moderation
+          </NavLink>
         </nav>
       </div>
     </header>
