@@ -6,19 +6,8 @@ import {
 
 import Navbar from "./components/Navbar";
 
-
-// ==================================
-// Member 2 - Book Search & Details
-// ==================================
-
 import SearchBooks from "./pages/SearchBooks";
 import BookDetails from "./pages/BookDetails";
-
-
-
-// ==================================
-// Member 2 - Reading Lists
-// ==================================
 
 import ReadingLists from "./pages/ReadingLists";
 import CreateReadingList from "./pages/CreateReadingList";
@@ -27,276 +16,133 @@ import ReadingListDetails from "./pages/ReadingListDetails";
 import EditReadingList from "./pages/EditReadingList";
 
 
-
-// ==================================
-// Member 3 - Reading Progress & Diary
-// ==================================
-
 import ReadingDiaryPage from "./pages/ReadingDiaryPage";
 import ReadingProgressPage from "./pages/ReadingProgressPage";
 import ReaderConnectionsPage from "./pages/ReaderConnectionsPage";
 import NotificationsPage from "./pages/NotificationsPage";
+
+import ReadingWrapped from "./pages/ReadingWrapped";
+
 import ReportContentPage from "./pages/ReportContentPage";
 import ModerationDashboard from "./pages/ModerationDashboard";
 
 
-
-
-
-
 export default function App() {
 
+return (
 
-  return (
+<div className="min-h-screen bg-[#f7f2e9]">
 
+<Navbar />
 
-    <div className="min-h-screen bg-[#f7f2e9]">
 
+<Routes>
 
-      <Navbar />
 
+<Route path="/books" element={<SearchBooks />} />
 
+<Route path="/books/:id" element={<BookDetails />} />
 
-      <Routes>
 
 
+<Route path="/reading-lists" element={<ReadingLists />} />
 
-        {/* ================================= */}
-        {/* Member 2 - Book Search */}
-        {/* ================================= */}
+<Route 
+path="/reading-lists/create"
+element={<CreateReadingList />}
+/>
 
 
-        <Route
+<Route 
+path="/reading-lists/mine"
+element={<MyReadingLists />}
+/>
 
-          path="/books"
 
-          element={<SearchBooks />}
+<Route 
+path="/reading-lists/:id"
+element={<ReadingListDetails />}
+/>
 
-        />
 
+<Route 
+path="/reading-lists/edit/:id"
+element={<EditReadingList />}
+/>
 
 
-        <Route
 
-          path="/books/:id"
 
-          element={<BookDetails />}
+<Route
+path="/reading-progress"
+element={<ReadingProgressPage />}
+/>
 
-        />
 
+<Route
+path="/reading-diary"
+element={<ReadingDiaryPage />}
+/>
 
 
+<Route
+path="/connections"
+element={<ReaderConnectionsPage />}
+/>
 
 
+<Route
+path="/notifications"
+element={<NotificationsPage />}
+/>
 
 
-        {/* ================================= */}
-        {/* Member 2 - Reading Lists */}
-        {/* ================================= */}
 
+<Route
+path="/reading-wrapped"
+element={<ReadingWrapped />}
+/>
 
 
-        {/* Public Reading Lists */}
+<Route
+path="/report"
+element={<ReportContentPage />}
+/>
 
-        <Route
 
-          path="/reading-lists"
+<Route
+path="/moderation"
+element={<ModerationDashboard />}
+/>
 
-          element={<ReadingLists />}
 
-        />
 
+<Route
+path="/"
+element={
+<Navigate
+to="/reading-wrapped"
+replace
+/>
+}
+/>
 
 
+<Route
+path="*"
+element={
+<Navigate
+to="/reading-wrapped"
+replace
+/>
+}
+/>
 
 
-        {/* Create Reading List */}
+</Routes>
 
-        <Route
+</div>
 
-          path="/reading-lists/create"
-
-          element={<CreateReadingList />}
-
-        />
-
-
-
-
-
-
-
-        {/* My Reading Lists */}
-
-        <Route
-
-          path="/reading-lists/mine"
-
-          element={<MyReadingLists />}
-
-        />
-
-
-
-
-
-
-
-        {/* Reading List Details */}
-
-        <Route
-
-          path="/reading-lists/:id"
-
-          element={<ReadingListDetails />}
-
-        />
-
-
-
-
-
-
-
-        {/* STEP 60 */}
-        {/* Edit Reading List */}
-
-        <Route
-
-          path="/reading-lists/edit/:id"
-
-          element={<EditReadingList />}
-
-        />
-
-
-
-
-
-
-
-
-
-        {/* ================================= */}
-        {/* Member 3 - Reading Progress */}
-        {/* ================================= */}
-
-
-
-        <Route
-
-          path="/reading-progress"
-
-          element={<ReadingProgressPage />}
-
-        />
-
-
-
-
-
-        <Route
-
-          path="/reading-diary"
-
-          element={<ReadingDiaryPage />}
-
-        />
-      <Route
-        path="/connections"
-        element={<ReaderConnectionsPage />}
-      />
-
-      <Route
-        path="/notifications"
-        element={<NotificationsPage />}
-      />
-
-      <Route
-        path="/report"
-        element={<ReportContentPage />}
-      />
-
-      <Route
-        path="/moderation"
-        element={<ModerationDashboard />}
-      />
-
-
-
-
-
-
-
-
-        {/* ================================= */}
-        {/* Home */}
-        {/* ================================= */}
-
-
-
-        <Route
-
-          path="/"
-
-          element={
-
-            <Navigate
-
-              to="/reading-progress"
-
-              replace
-
-            />
-
-          }
-
-        />
-
-
-
-
-
-
-
-
-
-        {/* ================================= */}
-        {/* Unknown URL */}
-        {/* ================================= */}
-
-
-
-        <Route
-
-          path="*"
-
-          element={
-
-            <Navigate
-
-              to="/reading-progress"
-
-              replace
-
-            />
-
-          }
-
-        />
-
-
-
-
-      </Routes>
-
-
-
-
-    </div>
-
-
-  );
-
+);
 
 }

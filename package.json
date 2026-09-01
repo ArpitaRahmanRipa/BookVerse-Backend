@@ -12,10 +12,16 @@
   "type": "commonjs",
   "dependencies": {
     "axios": "^1.19.0",
+    "cloudinary": "^2.10.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.7.4",
+<<<<<<< HEAD
     "nodemailer": "^9.0.6"
+=======
+    "multer": "^2.2.0",
+    "openai": "^7.5.0"
+>>>>>>> origin/main
   }
 }
