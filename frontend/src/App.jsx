@@ -23,6 +23,7 @@ import ProfilePage from "./pages/ProfilePage";
 
 import SearchBooks from "./pages/SearchBooks";
 import BookDetails from "./pages/BookDetails";
+import Review from "./pages/Review";
 
 import ReadingLists from "./pages/ReadingLists";
 import CreateReadingList from "./pages/CreateReadingList";
@@ -92,12 +93,14 @@ export default function App() {
           path="/books"
           element={<SearchBooks />}
         />
-
         <Route
           path="/books/:id"
           element={<BookDetails />}
         />
-
+        <Route
+          path="/books/:id/reviews"
+          element={<Review />}
+        />
 
         <Route
           path="/reading-lists"
