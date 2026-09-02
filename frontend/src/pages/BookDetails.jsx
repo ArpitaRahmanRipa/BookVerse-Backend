@@ -13,12 +13,18 @@ import {
   getBookDetails,
 } from "../services/bookApi";
 
-// Temporary shared development user.
-// Later replace with authenticated user.
-const USER_ID = "21201436";
+import {
+  useAuth,
+} from "../context/AuthContext";
+
 
 export default function BookDetails() {
   const { id } = useParams();
+
+  const {
+    user,
+    isAuthenticated,
+  } = useAuth();
 
   const [data, setData] =
     useState(null);
@@ -66,6 +72,16 @@ export default function BookDetails() {
 
   const handleAddToShelf =
     async (shelf) => {
+      if (
+        !isAuthenticated ||
+        !user?.userId
+      ) {
+        setShelfMessage(
+          "Please sign in to add books to your shelf."
+        );
+        return;
+      }
+
       if (!data?.book) {
         return;
       }
@@ -75,7 +91,7 @@ export default function BookDetails() {
 
         const result =
           await addBookToShelf({
-            userId: USER_ID,
+            userId: user.userId,
 
             bookId:
               book.googleBookId ||

@@ -5,9 +5,25 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 
 
+
 // ==============================
 // Route Imports
 // ==============================
+
+// Common Workflow - Authentication
+const authRoutes = require(
+  "./routes/authRoutes"
+);
+
+// Common Workflow - User Profile
+const userRoutes = require(
+  "./routes/userRoutes"
+);
+
+// Common Workflow - Admin User Management
+const userManagementRoutes = require(
+  "./routes/userManagementRoutes"
+);
 
 
 // Member 3 - Reading Progress & Diary
@@ -152,7 +168,26 @@ app.get("/", (req, res) => {
 // Feature Routes
 // ==============================
 
+// Common Workflow - Authentication
 
+app.use(
+  "/api/auth",
+  authRoutes
+);
+
+// Common Workflow - User Profile
+
+app.use(
+  "/api/users",
+  userRoutes
+);
+
+// Common Workflow - Admin User Management
+
+app.use(
+  "/api/admin/users",
+  userManagementRoutes
+);
 
 // Member 3 - Reading Progress
 
