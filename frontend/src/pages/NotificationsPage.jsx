@@ -1,4 +1,11 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  useNavigate,
+} from "react-router";
 
 import {
   deleteNotification,
@@ -8,134 +15,316 @@ import {
   markNotificationAsRead,
 } from "../services/notificationApi";
 
-const USER_ID = "21201436";
+import {
+  useAuth,
+} from "../context/AuthContext";
 
-const NotificationsPage = () => {
-  const [notifications, setNotifications] =
-    useState([]);
 
-  const [unreadCount, setUnreadCount] =
-    useState(0);
+export default function NotificationsPage() {
+  const navigate =
+    useNavigate();
 
-  const [activeTab, setActiveTab] =
-    useState("all");
+  const {
+    user,
+  } = useAuth();
 
-  const [loading, setLoading] =
-    useState(true);
+  const userId =
+    user?.userId;
 
-  const [error, setError] =
-    useState("");
+
+  const [
+    notifications,
+    setNotifications,
+  ] = useState([]);
+
+
+  const [
+    unreadCount,
+    setUnreadCount,
+  ] = useState(0);
+
+
+  const [
+    activeTab,
+    setActiveTab,
+  ] = useState("all");
+
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
+
+
+  const [
+    working,
+    setWorking,
+  ] = useState(false);
+
+
+  const [
+    message,
+    setMessage,
+  ] = useState({
+    type: "",
+    text: "",
+  });
+
 
   // ==============================
-  // Load notifications
+  // Load Current User Notifications
   // ==============================
 
-  const loadNotifications = async () => {
-    try {
-      setLoading(true);
-      setError("");
+  const loadNotifications =
+    async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
 
-      const [
-        notificationsResponse,
-        unreadResponse,
-      ] = await Promise.all([
-        getNotifications(USER_ID),
-        getUnreadCount(USER_ID),
-      ]);
 
-      setNotifications(
-        notificationsResponse.data || []
-      );
+      try {
+        setLoading(true);
 
-      setUnreadCount(
-        unreadResponse.unreadCount || 0
-      );
-    } catch (err) {
-      setError(
-        err.message ||
-          "Failed to load notifications"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+
+        const [
+          notificationsResponse,
+          unreadResponse,
+        ] = await Promise.all([
+          getNotifications(
+            userId
+          ),
+
+          getUnreadCount(
+            userId
+          ),
+        ]);
+
+
+        setNotifications(
+          notificationsResponse.data ||
+            []
+        );
+
+
+        setUnreadCount(
+          unreadResponse.unreadCount ||
+            0
+        );
+
+      } catch (error) {
+
+        setMessage({
+          type: "error",
+
+          text:
+            error instanceof Error
+              ? error.message
+              : "Failed to load notifications.",
+        });
+
+      } finally {
+
+        setLoading(false);
+
+      }
+    };
+
 
   useEffect(() => {
     loadNotifications();
-  }, []);
+  }, [userId]);
+
 
   // ==============================
-  // Mark one notification as read
+  // Mark One As Read
   // ==============================
 
-  const handleMarkAsRead = async (
-    notificationId
+  const handleMarkAsRead =
+    async (
+      notificationId
+    ) => {
+      try {
+        setWorking(true);
+
+        setMessage({
+          type: "",
+          text: "",
+        });
+
+
+        await markNotificationAsRead(
+          notificationId
+        );
+
+
+        await loadNotifications();
+
+      } catch (error) {
+
+        setMessage({
+          type: "error",
+
+          text:
+            error instanceof Error
+              ? error.message
+              : "Failed to mark notification as read.",
+        });
+
+      } finally {
+
+        setWorking(false);
+
+      }
+    };
+
+
+  // ==============================
+  // Mark All As Read
+  // ==============================
+
+  const handleMarkAllAsRead =
+    async () => {
+      if (!userId) {
+        return;
+      }
+
+
+      try {
+        setWorking(true);
+
+        setMessage({
+          type: "",
+          text: "",
+        });
+
+
+        await markAllNotificationsAsRead(
+          userId
+        );
+
+
+        await loadNotifications();
+
+
+        setMessage({
+          type: "success",
+
+          text:
+            "All notifications marked as read.",
+        });
+
+      } catch (error) {
+
+        setMessage({
+          type: "error",
+
+          text:
+            error instanceof Error
+              ? error.message
+              : "Failed to mark all notifications as read.",
+        });
+
+      } finally {
+
+        setWorking(false);
+
+      }
+    };
+
+
+  // ==============================
+  // Delete Notification
+  // ==============================
+
+  const handleDelete =
+    async (
+      notificationId
+    ) => {
+      try {
+        setWorking(true);
+
+        setMessage({
+          type: "",
+          text: "",
+        });
+
+
+        await deleteNotification(
+          notificationId
+        );
+
+
+        await loadNotifications();
+
+
+        setMessage({
+          type: "success",
+
+          text:
+            "Notification deleted successfully.",
+        });
+
+      } catch (error) {
+
+        setMessage({
+          type: "error",
+
+          text:
+            error instanceof Error
+              ? error.message
+              : "Failed to delete notification.",
+        });
+
+      } finally {
+
+        setWorking(false);
+
+      }
+    };
+
+
+  // ==============================
+  // View Notification Activity
+  // ==============================
+
+  const handleViewActivity =
+    async (
+      notification
+    ) => {
+      try {
+        if (
+          !notification.isRead
+        ) {
+          await markNotificationAsRead(
+            notification._id
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Failed to mark notification as read:",
+          error.message
+        );
+      }
+
+
+      if (
+        notification.link
+      ) {
+        navigate(
+          notification.link
+        );
+      }
+    };
+
+
+  // ==============================
+  // Notification Labels
+  // ==============================
+
+  const getTypeLabel = (
+    type
   ) => {
-    try {
-      setError("");
-
-      await markNotificationAsRead(
-        notificationId
-      );
-
-      await loadNotifications();
-    } catch (err) {
-      setError(
-        err.message ||
-          "Failed to mark notification as read"
-      );
-    }
-  };
-
-  // ==============================
-  // Mark all as read
-  // ==============================
-
-  const handleMarkAllAsRead = async () => {
-    try {
-      setError("");
-
-      await markAllNotificationsAsRead(
-        USER_ID
-      );
-
-      await loadNotifications();
-    } catch (err) {
-      setError(
-        err.message ||
-          "Failed to mark all notifications as read"
-      );
-    }
-  };
-
-  // ==============================
-  // Delete notification
-  // ==============================
-
-  const handleDelete = async (
-    notificationId
-  ) => {
-    try {
-      setError("");
-
-      await deleteNotification(
-        notificationId
-      );
-
-      await loadNotifications();
-    } catch (err) {
-      setError(
-        err.message ||
-          "Failed to delete notification"
-      );
-    }
-  };
-
-  // ==============================
-  // Notification type label
-  // ==============================
-
-  const getTypeLabel = (type) => {
     switch (type) {
       case "follow":
         return "New Follower";
@@ -160,20 +349,75 @@ const NotificationsPage = () => {
     }
   };
 
+
+  const getTypeIcon = (
+    type
+  ) => {
+    switch (type) {
+      case "follow":
+        return "👥";
+
+      case "review_like":
+        return "❤️";
+
+      case "review_comment":
+        return "💬";
+
+      case "list_like":
+        return "📚";
+
+      case "reading_reminder":
+        return "⏰";
+
+      case "moderation_update":
+        return "🛡️";
+
+      default:
+        return "🔔";
+    }
+  };
+
+
   // ==============================
-  // Date formatting
+  // Date
   // ==============================
 
-  const formatDate = (date) => {
-    if (!date) {
+  const formatDate = (
+    value
+  ) => {
+    if (!value) {
       return "";
     }
 
-    return new Date(date).toLocaleString();
+
+    const date =
+      new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return "";
+    }
+
+
+    return new Intl.DateTimeFormat(
+      "en-GB",
+      {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    ).format(date);
   };
 
+
   // ==============================
-  // All / Unread filtering
+  // Filter
   // ==============================
 
   const displayedNotifications =
@@ -184,187 +428,392 @@ const NotificationsPage = () => {
         )
       : notifications;
 
-  return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8">
-      <div className="mx-auto max-w-4xl">
-        {/* Header */}
 
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  return (
+    <main className="min-h-screen bg-[#f7f2e9]">
+
+      <div className="mx-auto max-w-5xl px-6 py-10">
+
+
+        {/* ============================== */}
+        {/* Header */}
+        {/* ============================== */}
+
+        <section className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+
+
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#8a5d42]">
+              BookVerse Activity
+            </p>
+
+
+            <h1 className="mt-2 text-4xl font-bold text-[#352522]">
               Notifications
             </h1>
 
-            <p className="mt-1 text-gray-600">
-              Stay updated with your BookVerse
-              activity.
+
+            <p className="mt-2 text-stone-600">
+              Stay updated with your
+              BookVerse activity.
             </p>
+
+
+            {user?.name && (
+              <p className="mt-2 text-sm font-semibold text-[#6f3f26]">
+                Notifications for{" "}
+                {user.name}
+              </p>
+            )}
+
           </div>
+
 
           {unreadCount > 0 && (
             <button
-              onClick={handleMarkAllAsRead}
-              className="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-700"
+              type="button"
+              onClick={
+                handleMarkAllAsRead
+              }
+              disabled={
+                working
+              }
+              className="rounded-xl bg-[#6f3f26] px-5 py-3 font-semibold text-white transition hover:bg-[#57301d] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Mark All as Read
             </button>
           )}
-        </div>
 
-        {/* Unread summary */}
+        </section>
 
-        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-600">
-            Unread notifications
-          </p>
 
-          <p className="mt-1 text-3xl font-bold text-indigo-600">
-            {unreadCount}
-          </p>
-        </div>
 
-        {/* Tabs */}
+        {/* ============================== */}
+        {/* Message */}
+        {/* ============================== */}
 
-        <div className="mb-6 flex gap-2">
-          <button
-            onClick={() =>
-              setActiveTab("all")
-            }
-            className={`rounded-lg px-4 py-2 font-medium ${
-              activeTab === "all"
-                ? "bg-indigo-600 text-white"
-                : "bg-white text-gray-700 shadow-sm"
+        {message.text && (
+          <div
+            className={`mt-6 rounded-xl border px-5 py-4 font-medium ${
+              message.type ===
+              "success"
+                ? "border-green-200 bg-green-50 text-green-800"
+                : "border-red-200 bg-red-50 text-red-800"
             }`}
           >
-            All ({notifications.length})
-          </button>
-
-          <button
-            onClick={() =>
-              setActiveTab("unread")
-            }
-            className={`rounded-lg px-4 py-2 font-medium ${
-              activeTab === "unread"
-                ? "bg-indigo-600 text-white"
-                : "bg-white text-gray-700 shadow-sm"
-            }`}
-          >
-            Unread ({unreadCount})
-          </button>
-        </div>
-
-        {/* Error */}
-
-        {error && (
-          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-            {error}
+            {message.text}
           </div>
         )}
 
-        {/* Loading */}
+
+
+        {/* ============================== */}
+        {/* Unread Summary */}
+        {/* ============================== */}
+
+        <section className="mt-8 rounded-3xl bg-[#352522] p-6 text-white shadow-sm">
+
+
+          <div className="flex items-center justify-between gap-4">
+
+
+            <div>
+
+              <p className="text-sm text-stone-300">
+                Unread Notifications
+              </p>
+
+
+              <p className="mt-2 text-4xl font-bold">
+                {unreadCount}
+              </p>
+
+            </div>
+
+
+            <div className="text-5xl">
+              🔔
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        {/* ============================== */}
+        {/* Tabs */}
+        {/* ============================== */}
+
+        <section className="mt-6 flex flex-wrap gap-3">
+
+
+          <button
+            type="button"
+            onClick={() =>
+              setActiveTab(
+                "all"
+              )
+            }
+            className={
+              activeTab === "all"
+                ? "rounded-xl bg-[#824425] px-5 py-2.5 font-semibold text-white"
+                : "rounded-xl border border-stone-300 bg-white px-5 py-2.5 font-semibold text-stone-700 transition hover:bg-stone-50"
+            }
+          >
+            All (
+            {
+              notifications.length
+            }
+            )
+          </button>
+
+
+          <button
+            type="button"
+            onClick={() =>
+              setActiveTab(
+                "unread"
+              )
+            }
+            className={
+              activeTab ===
+              "unread"
+                ? "rounded-xl bg-[#824425] px-5 py-2.5 font-semibold text-white"
+                : "rounded-xl border border-stone-300 bg-white px-5 py-2.5 font-semibold text-stone-700 transition hover:bg-stone-50"
+            }
+          >
+            Unread (
+            {unreadCount})
+          </button>
+
+        </section>
+
+
+
+        {/* ============================== */}
+        {/* Content */}
+        {/* ============================== */}
 
         {loading ? (
-          <div className="rounded-xl bg-white p-8 text-center shadow-sm">
-            <p className="text-gray-600">
+
+          <section className="mt-6 rounded-3xl bg-white p-10 text-center shadow-sm">
+
+            <p className="text-stone-600">
               Loading notifications...
             </p>
-          </div>
+
+          </section>
+
         ) : displayedNotifications.length ===
           0 ? (
-          <div className="rounded-xl bg-white p-8 text-center shadow-sm">
-            <p className="font-medium text-gray-800">
-              No notifications found.
+
+          <section className="mt-6 rounded-3xl border border-stone-200 bg-white p-10 text-center shadow-sm">
+
+
+            <div className="text-5xl">
+              🔔
+            </div>
+
+
+            <h2 className="mt-5 text-2xl font-bold text-[#352522]">
+              No notifications found
+            </h2>
+
+
+            <p className="mt-2 text-stone-500">
+
+              {activeTab === "unread"
+                ? "You have no unread notifications."
+                : "New BookVerse activity will appear here."}
+
             </p>
 
-            <p className="mt-1 text-sm text-gray-500">
-              New activity will appear here.
-            </p>
-          </div>
+          </section>
+
         ) : (
-          <div className="space-y-4">
+
+          <section className="mt-6 space-y-4">
+
+
             {displayedNotifications.map(
-              (notification) => (
-                <div
-                  key={notification._id}
-                  className={`rounded-xl border p-5 shadow-sm ${
+              (
+                notification
+              ) => (
+
+                <article
+                  key={
+                    notification._id
+                  }
+                  className={`rounded-3xl border p-6 shadow-sm ${
                     notification.isRead
-                      ? "border-gray-200 bg-white"
-                      : "border-indigo-200 bg-indigo-50"
+                      ? "border-stone-200 bg-white"
+                      : "border-[#d9b89f] bg-[#fffaf5]"
                   }`}
                 >
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="flex-1">
-                      <div className="mb-2 flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                          {getTypeLabel(
-                            notification.type
-                          )}
-                        </span>
 
-                        {!notification.isRead && (
-                          <span className="rounded-full bg-indigo-600 px-2 py-1 text-xs font-semibold text-white">
-                            New
-                          </span>
-                        )}
+
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+
+
+                    <div className="flex flex-1 gap-4">
+
+
+                      {/* Icon */}
+
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#f1e5d8] text-xl">
+
+                        {
+                          getTypeIcon(
+                            notification.type
+                          )
+                        }
+
                       </div>
 
-                      <p className="text-base font-medium text-gray-900">
-                        {notification.message}
-                      </p>
 
-                      <p className="mt-2 text-sm text-gray-500">
-                        {formatDate(
-                          notification.createdAt
+
+                      <div className="flex-1">
+
+
+                        {/* Labels */}
+
+                        <div className="flex flex-wrap items-center gap-2">
+
+
+                          <span className="rounded-full bg-[#f4eadf] px-3 py-1 text-xs font-bold text-[#6f3f26]">
+
+                            {
+                              getTypeLabel(
+                                notification.type
+                              )
+                            }
+
+                          </span>
+
+
+                          {!notification.isRead && (
+                            <span className="rounded-full bg-[#824425] px-2.5 py-1 text-xs font-bold text-white">
+                              New
+                            </span>
+                          )}
+
+                        </div>
+
+
+
+                        {/* Message */}
+
+                        <p className="mt-3 font-medium leading-7 text-[#352522]">
+                          {
+                            notification.message
+                          }
+                        </p>
+
+
+
+                        {/* Date */}
+
+                        <p className="mt-2 text-sm text-stone-500">
+
+                          {
+                            formatDate(
+                              notification.createdAt
+                            )
+                          }
+
+                        </p>
+
+
+
+                        {/* Email Status */}
+
+                        {notification.emailSent && (
+                          <p className="mt-2 text-xs font-semibold text-green-700">
+                            ✉️ Email alert sent
+                          </p>
                         )}
-                      </p>
 
-                      {notification.link && (
-                        <button
-                          onClick={() => {
-                            window.location.href =
-                              notification.link;
-                          }}
-                          className="mt-3 text-sm font-semibold text-indigo-600 hover:underline"
-                        >
-                          View Activity
-                        </button>
-                      )}
+
+
+                        {/* Link */}
+
+                        {notification.link && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleViewActivity(
+                                notification
+                              )
+                            }
+                            className="mt-4 text-sm font-bold text-[#824425] hover:underline"
+                          >
+                            View Activity →
+                          </button>
+                        )}
+
+                      </div>
+
                     </div>
 
+
+
+                    {/* ============================== */}
+                    {/* Actions */}
+                    {/* ============================== */}
+
                     <div className="flex flex-wrap gap-2">
+
+
                       {!notification.isRead && (
                         <button
+                          type="button"
                           onClick={() =>
                             handleMarkAsRead(
                               notification._id
                             )
                           }
-                          className="rounded-lg border border-indigo-600 px-3 py-2 text-sm font-medium text-indigo-600 transition hover:bg-indigo-50"
+                          disabled={
+                            working
+                          }
+                          className="rounded-xl border border-[#824425] px-3 py-2 text-sm font-semibold text-[#824425] transition hover:bg-[#f5ebe1] disabled:opacity-50"
                         >
                           Mark as Read
                         </button>
                       )}
 
+
                       <button
+                        type="button"
                         onClick={() =>
                           handleDelete(
                             notification._id
                           )
                         }
-                        className="rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                        disabled={
+                          working
+                        }
+                        className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:opacity-50"
                       >
                         Delete
                       </button>
+
                     </div>
+
                   </div>
-                </div>
+
+                </article>
+
               )
             )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
 
-export default NotificationsPage;
+          </section>
+
+        )}
+
+      </div>
+
+    </main>
+  );
+}

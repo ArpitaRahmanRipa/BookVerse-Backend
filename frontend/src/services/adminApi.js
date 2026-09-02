@@ -82,3 +82,87 @@ export const deleteCategory = async (categoryId) => {
 
   return handleResponse(response);
 };
+
+// ==============================
+// Admin - Get Registered Users
+// ==============================
+
+export const getAdminUsers = async (
+  token
+) => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/users`,
+    {
+      headers: {
+        Authorization:
+          `Bearer ${token}`,
+      },
+    }
+  );
+
+  return handleResponse(response);
+};
+
+
+// ==============================
+// Admin - Change User Role
+// ==============================
+
+export const updateAdminUserRole = async (
+  token,
+  mongoUserId,
+  role
+) => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/users/${mongoUserId}/role`,
+    {
+      method: "PATCH",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+
+        Authorization:
+          `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({
+        role,
+      }),
+    }
+  );
+
+  return handleResponse(response);
+};
+
+
+// ==============================
+// Admin - Activate / Deactivate User
+// ==============================
+
+export const updateAdminUserStatus = async (
+  token,
+  mongoUserId,
+  isActive
+) => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/users/${mongoUserId}/status`,
+    {
+      method: "PATCH",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+
+        Authorization:
+          `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({
+        isActive,
+      }),
+    }
+  );
+
+  return handleResponse(response);
+};
