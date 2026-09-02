@@ -64,6 +64,9 @@ const shelfRoutes = require(
   "./routes/shelfRoutes"
 );
 
+const reviewRoutes = require(
+  "./routes/reviewRoutes"
+);
 
 // ==============================
 // Member 4 Features
@@ -245,6 +248,12 @@ app.use(
   shelfRoutes
 );
 
+// Reviews, Likes & Comments
+
+app.use(
+  "/api/reviews",
+  reviewRoutes
+);
 
 // Reading Lists
 
