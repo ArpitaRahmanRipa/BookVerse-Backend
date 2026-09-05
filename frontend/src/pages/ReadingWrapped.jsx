@@ -1,71 +1,119 @@
-import { useEffect, useState } from "react";
-import { getYearlyReadingWrapped } from "../services/readingWrappedApi";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-const USER_ID = "21201436";
+import {
+  getYearlyReadingWrapped,
+} from "../services/readingWrappedApi";
+
+import {
+  useAuth,
+} from "../context/AuthContext";
 
 
 export default function ReadingWrapped() {
+  const {
+    user,
+  } = useAuth();
 
-  const [wrapped, setWrapped] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [shareMessage, setShareMessage] = useState("");
-
-  const year = new Date().getFullYear();
+  const userId =
+    user?.userId;
 
 
+  const [wrapped, setWrapped] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  const [
+    shareMessage,
+    setShareMessage,
+  ] = useState("");
+
+
+  const year =
+    new Date().getFullYear();
+
+
+  // ==============================
+  // Load Logged-In User's Wrapped
+  // ==============================
 
   useEffect(() => {
+    const loadWrapped =
+      async () => {
+        if (!userId) {
+          setLoading(false);
+          return;
+        }
 
-    const loadWrapped = async () => {
+        try {
+          setLoading(true);
+          setError("");
 
-      try {
 
-        const result =
-          await getYearlyReadingWrapped(
-            USER_ID,
-            year
+          const result =
+            await getYearlyReadingWrapped(
+              userId,
+              year
+            );
+
+
+          setWrapped(
+            result.data
           );
 
+        } catch (error) {
 
-        setWrapped(result.data);
+          setError(
+            error instanceof Error
+              ? error.message
+              : "Failed to load Reading Wrapped."
+          );
 
+        } finally {
 
-      } catch (err) {
+          setLoading(false);
 
-        setError(err.message);
-
-
-      } finally {
-
-        setLoading(false);
-
-      }
-
-    };
+        }
+      };
 
 
     loadWrapped();
 
-
-  }, []);
-
-
-
-
-
-  const handleShare = async () => {
-
-    const topBook =
-      wrapped.highestRatedBooks?.[0];
+  }, [
+    userId,
+    year,
+  ]);
 
 
-    const shareText = `
+  // ==============================
+  // Share Wrapped
+  // ==============================
+
+  const handleShare =
+    async () => {
+      if (!wrapped) {
+        return;
+      }
+
+
+      const topBook =
+        wrapped
+          .highestRatedBooks?.[0];
+
+
+      const shareText = `
 📚 My ${wrapped.year} Reading Wrapped
 
-Books Read: ${wrapped.totalBooksRead}
+Books Read: ${wrapped.totalBooksRead || 0}
 
-Pages Read: ${wrapped.totalPagesRead}
+Pages Read: ${wrapped.totalPagesRead || 0}
 
 Favourite Author:
 ${wrapped.favoriteAuthors?.[0]?.author || "N/A"}
@@ -74,407 +122,517 @@ Top Rated Book:
 ${topBook?.title || "N/A"}
 
 Rating:
-⭐ ${topBook?.rating || "N/A"}
+⭐ ${topBook?.rating ?? "N/A"}
 
 Achievement:
 ${wrapped.achievements?.[0]?.title || "N/A"}
 
 Created with BookVerse
-    `;
+      `.trim();
 
 
-    try {
+      try {
+        if (navigator.share) {
 
-      if (navigator.share) {
+          await navigator.share({
+            title:
+              `${wrapped.year} Reading Wrapped`,
 
-        await navigator.share({
+            text:
+              shareText,
+          });
 
-          title:
-            `${wrapped.year} Reading Wrapped`,
 
-          text:
-            shareText,
+          setShareMessage(
+            "Shared successfully!"
+          );
 
-        });
+        } else {
 
+          await navigator.clipboard.writeText(
+            shareText
+          );
+
+
+          setShareMessage(
+            "Copied to clipboard!"
+          );
+
+        }
+
+      } catch {
 
         setShareMessage(
-          "Shared successfully!"
-        );
-
-
-      } else {
-
-
-        await navigator.clipboard.writeText(
-          shareText
-        );
-
-
-        setShareMessage(
-          "Copied to clipboard!"
+          "Sharing cancelled."
         );
 
       }
+    };
 
 
-    } catch (error) {
-
-      setShareMessage(
-        "Sharing cancelled."
-      );
-
-    }
-
-  };
-
-
-
-
+  // ==============================
+  // Loading
+  // ==============================
 
   if (loading) {
-
     return (
+      <main className="mx-auto max-w-6xl px-6 py-16">
 
-      <div className="p-10 text-center">
+        <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
 
-        Loading your Reading Wrapped...
+          <p className="text-lg text-stone-600">
+            Loading your Reading Wrapped...
+          </p>
 
-      </div>
+        </div>
 
+      </main>
     );
-
   }
 
 
-
-
+  // ==============================
+  // Error
+  // ==============================
 
   if (error) {
-
     return (
+      <main className="mx-auto max-w-6xl px-6 py-16">
 
-      <div className="p-10 text-center text-red-600">
+        <div className="rounded-3xl border border-red-200 bg-red-50 p-10 text-center text-red-700">
 
-        {error}
+          {error}
 
-      </div>
+        </div>
 
+      </main>
     );
-
   }
 
 
+  if (!wrapped) {
+    return null;
+  }
 
+
+  const highestRatedBooks =
+    wrapped.highestRatedBooks || [];
+
+  const favoriteAuthors =
+    wrapped.favoriteAuthors || [];
+
+  const achievements =
+    wrapped.achievements || [];
 
 
   return (
-
-    <div className="min-h-screen bg-[#f7f2e9] p-8">
-
-
-      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow p-8">
+    <main className="mx-auto max-w-6xl px-6 py-10">
 
 
+      {/* ============================== */}
+      {/* Header */}
+      {/* ============================== */}
 
-        <h1 className="text-4xl font-bold text-center mb-5">
+      <section className="mb-8 text-center">
 
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#8a5d42]">
+          BookVerse
+        </p>
+
+
+        <h1 className="mt-2 text-4xl font-bold text-[#352522]">
           📚 {wrapped.year} Reading Wrapped
-
         </h1>
 
 
+        <p className="mx-auto mt-3 max-w-2xl text-stone-600">
+          A look back at your books,
+          pages, favourite authors,
+          ratings, and reading
+          achievements.
+        </p>
 
 
-        {/* Share Button */}
+        {user?.name && (
+          <p className="mt-3 font-semibold text-[#6f3f26]">
+            Wrapped for{" "}
+            {user.name}
+          </p>
+        )}
 
-        <div className="text-center mb-8">
 
+        <button
+          type="button"
+          onClick={handleShare}
+          className="mt-6 rounded-xl bg-[#6f3f26] px-6 py-3 font-semibold text-white transition hover:bg-[#57301d]"
+        >
+          📤 Share My Reading Wrapped
+        </button>
 
-          <button
 
-            onClick={handleShare}
+        {shareMessage && (
+          <p className="mt-3 text-sm font-semibold text-green-700">
+            {shareMessage}
+          </p>
+        )}
 
-            className="rounded-xl bg-[#352522] px-6 py-3 font-semibold text-white hover:bg-[#4a332e]"
+      </section>
 
-          >
 
-            📤 Share My Reading Wrapped
 
-          </button>
+      {/* ============================== */}
+      {/* Summary */}
+      {/* ============================== */}
 
+      <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
 
-          {shareMessage && (
+        <SummaryCard
+          label="Books Read"
+          value={
+            wrapped.totalBooksRead || 0
+          }
+          icon="📚"
+        />
 
-            <p className="mt-3 text-green-700">
 
-              {shareMessage}
+        <SummaryCard
+          label="Pages Read"
+          value={
+            wrapped.totalPagesRead || 0
+          }
+          icon="📖"
+        />
 
-            </p>
 
-          )}
+        <SummaryCard
+          label="Most Active Month"
+          value={
+            wrapped
+              .mostActiveMonth
+              ?.month || "N/A"
+          }
+          icon="📅"
+        />
 
 
-        </div>
+        <SummaryCard
+          label="Achievements"
+          value={
+            achievements.length
+          }
+          icon="🏆"
+        />
 
+      </section>
 
 
 
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
 
 
+        {/* ============================== */}
+        {/* Highest Rated */}
+        {/* ============================== */}
 
-        {/* Summary Cards */}
+        <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
 
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-
-
-
-          <div className="bg-[#faf6ef] rounded-xl p-5">
-
-            <p className="text-gray-500">
-              Books Read
-            </p>
-
-            <h2 className="text-3xl font-bold">
-
-              {wrapped.totalBooksRead}
-
-            </h2>
-
-          </div>
-
-
-
-
-
-          <div className="bg-[#faf6ef] rounded-xl p-5">
-
-            <p className="text-gray-500">
-              Pages Read
-            </p>
-
-            <h2 className="text-3xl font-bold">
-
-              {wrapped.totalPagesRead}
-
-            </h2>
-
-          </div>
-
-
-
-
-
-          <div className="bg-[#faf6ef] rounded-xl p-5">
-
-            <p className="text-gray-500">
-              Active Month
-            </p>
-
-            <h2 className="text-xl font-bold">
-
-              {wrapped.mostActiveMonth?.month ||
-                "N/A"}
-
-            </h2>
-
-          </div>
-
-
-
-
-
-          <div className="bg-[#faf6ef] rounded-xl p-5">
-
-            <p className="text-gray-500">
-              Achievements
-            </p>
-
-            <h2 className="text-3xl font-bold">
-
-              {wrapped.achievements.length}
-
-            </h2>
-
-          </div>
-
-
-
-        </div>
-
-
-
-
-
-
-
-        {/* Highest Rated Books */}
-
-
-        <section className="mt-10">
-
-
-          <h2 className="text-2xl font-bold mb-4">
-
+          <h2 className="text-2xl font-bold text-[#352522]">
             ⭐ Highest Rated Books
-
           </h2>
 
 
+          {highestRatedBooks.length ===
+          0 ? (
 
-          {wrapped.highestRatedBooks.map(
+            <EmptyState
+              text="No rated finished books yet."
+            />
 
-            (book,index)=>(
+          ) : (
 
-              <div
+            <div className="mt-5 space-y-3">
 
-                key={index}
+              {highestRatedBooks.map(
+                (
+                  book,
+                  index
+                ) => (
 
-                className="border rounded-xl p-4 mb-3"
+                  <article
+                    key={
+                      book.bookId ||
+                      `${book.title}-${index}`
+                    }
+                    className="rounded-2xl border border-stone-200 bg-[#faf6ef] p-4"
+                  >
 
-              >
-
-                <p className="font-semibold">
-
-                  {book.title}
-
-                </p>
-
-
-                <p>
-
-                  {book.author}
-
-                </p>
-
-
-                <p>
-
-                  Rating: ⭐ {book.rating}
-
-                </p>
+                    <h3 className="font-bold text-[#352522]">
+                      {book.title}
+                    </h3>
 
 
-              </div>
+                    <p className="mt-1 text-sm text-stone-600">
+                      {book.author ||
+                        "Unknown Author"}
+                    </p>
 
-            )
+
+                    <p className="mt-2 font-semibold text-[#6f3f26]">
+                      ⭐{" "}
+                      {book.rating}
+                    </p>
+
+                  </article>
+
+                )
+              )}
+
+            </div>
 
           )}
-
-
 
         </section>
 
 
 
+        {/* ============================== */}
+        {/* Favorite Authors */}
+        {/* ============================== */}
+
+        <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
 
 
-
-
-        {/* Favourite Authors */}
-
-
-        <section className="mt-10">
-
-
-          <h2 className="text-2xl font-bold mb-4">
-
+          <h2 className="text-2xl font-bold text-[#352522]">
             ✍️ Favourite Authors
-
           </h2>
 
 
+          {favoriteAuthors.length ===
+          0 ? (
 
-          {wrapped.favoriteAuthors.map(
+            <EmptyState
+              text="No favourite author data yet."
+            />
 
-            (author,index)=>(
+          ) : (
 
-              <p key={index}>
+            <div className="mt-5 space-y-3">
 
-                {author.author}
+              {favoriteAuthors.map(
+                (
+                  author,
+                  index
+                ) => (
 
-                {" "}
+                  <div
+                    key={`${author.author}-${index}`}
+                    className="flex items-center justify-between rounded-2xl border border-stone-200 bg-[#faf6ef] p-4"
+                  >
 
-                ({author.booksRead} books)
-
-              </p>
-
-            )
-
-          )}
-
-
-
-        </section>
-
-
-
-
-
-
-
-        {/* Achievements */}
+                    <span className="font-semibold text-[#352522]">
+                      {
+                        author.author
+                      }
+                    </span>
 
 
-        <section className="mt-10">
+                    <span className="text-sm text-stone-500">
+                      {
+                        author.booksRead
+                      }{" "}
+                      {
+                        author.booksRead === 1
+                          ? "book"
+                          : "books"
+                      }
+                    </span>
 
+                  </div>
 
-          <h2 className="text-2xl font-bold mb-4">
+                )
+              )}
 
-            🏆 Achievements
-
-          </h2>
-
-
-
-
-          {wrapped.achievements.map(
-
-            (item,index)=>(
-
-              <div
-
-                key={index}
-
-                className="bg-[#faf6ef] rounded-xl p-4 mb-3"
-
-              >
-
-                <p className="font-bold">
-
-                  {item.title}
-
-                </p>
-
-
-                <p>
-
-                  {item.description}
-
-                </p>
-
-
-              </div>
-
-            )
+            </div>
 
           )}
 
-
-
-
         </section>
-
-
-
 
       </div>
 
 
-    </div>
 
+      {/* ============================== */}
+      {/* Active Month */}
+      {/* ============================== */}
+
+      <section className="mt-6 rounded-3xl bg-[#352522] p-7 text-white shadow-sm">
+
+
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#d6ad8c]">
+          Reading Activity
+        </p>
+
+
+        <h2 className="mt-2 text-3xl font-bold">
+          📅 Most Active Month
+        </h2>
+
+
+        {wrapped.mostActiveMonth ? (
+
+          <div className="mt-5">
+
+            <p className="text-2xl font-bold">
+              {
+                wrapped
+                  .mostActiveMonth
+                  .month
+              }
+            </p>
+
+
+            <p className="mt-2 text-stone-300">
+              You finished{" "}
+              {
+                wrapped
+                  .mostActiveMonth
+                  .booksRead
+              }{" "}
+              {
+                wrapped
+                  .mostActiveMonth
+                  .booksRead === 1
+                  ? "book"
+                  : "books"
+              }{" "}
+              during this month.
+            </p>
+
+          </div>
+
+        ) : (
+
+          <p className="mt-4 text-stone-300">
+            Finish books this year to
+            build your reading activity
+            summary.
+          </p>
+
+        )}
+
+      </section>
+
+
+
+      {/* ============================== */}
+      {/* Achievements */}
+      {/* ============================== */}
+
+      <section className="mt-6 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+
+
+        <h2 className="text-2xl font-bold text-[#352522]">
+          🏆 Achievements
+        </h2>
+
+
+        {achievements.length === 0 ? (
+
+          <EmptyState
+            text="No achievements unlocked yet. Keep reading!"
+          />
+
+        ) : (
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+
+            {achievements.map(
+              (
+                achievement,
+                index
+              ) => (
+
+                <article
+                  key={`${achievement.title}-${index}`}
+                  className="rounded-2xl border border-[#eadfce] bg-[#faf6ef] p-5"
+                >
+
+                  <div className="text-3xl">
+                    🏅
+                  </div>
+
+
+                  <h3 className="mt-3 text-lg font-bold text-[#352522]">
+                    {
+                      achievement.title
+                    }
+                  </h3>
+
+
+                  <p className="mt-2 text-sm leading-6 text-stone-600">
+                    {
+                      achievement.description
+                    }
+                  </p>
+
+                </article>
+
+              )
+            )}
+
+          </div>
+
+        )}
+
+      </section>
+
+    </main>
   );
+}
 
+
+// ==============================
+// Summary Card
+// ==============================
+
+function SummaryCard({
+  label,
+  value,
+  icon,
+}) {
+  return (
+    <article className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+
+      <div className="text-3xl">
+        {icon}
+      </div>
+
+      <p className="mt-4 text-sm font-semibold text-stone-500">
+        {label}
+      </p>
+
+      <p className="mt-1 text-3xl font-bold text-[#352522]">
+        {value}
+      </p>
+
+    </article>
+  );
+}
+
+
+// ==============================
+// Empty State
+// ==============================
+
+function EmptyState({
+  text,
+}) {
+  return (
+    <div className="mt-5 rounded-2xl bg-[#faf6ef] p-6 text-center text-stone-500">
+      {text}
+    </div>
+  );
 }

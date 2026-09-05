@@ -1,12 +1,20 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
+    userId: {
+      type: String,
+      unique: true,
+      trim: true,
+      immutable: true,
+      default: () => new mongoose.Types.ObjectId().toString(),
+    },
+
     name: {
       type: String,
       required: true,
       trim: true,
+      maxlength: 100,
     },
 
     email: {
@@ -21,13 +29,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
       trim: true,
+      minlength: 3,
+      maxlength: 30,
     },
 
-    password: {
+    passwordHash: {
       type: String,
       required: true,
-      minlength: 6,
       select: false,
     },
 
@@ -37,42 +47,38 @@ const userSchema = new mongoose.Schema(
       default: "Reader",
     },
 
-    studentId: {
+    bio: {
       type: String,
       default: "",
       trim: true,
+      maxlength: 500,
+    },
+
+    favoriteGenres: {
+      type: [String],
+      default: [],
+    },
+
+    readingGoal: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    privacy: {
+      type: String,
+      enum: ["Public", "Private"],
+      default: "Public",
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {
     timestamps: true,
   }
 );
-
-userSchema.pre("save", async function hashPassword() {
-  if (!this.isModified("password")) {
-    return;
-  }
-
-  this.password = await bcrypt.hash(this.password, 10);
-});
-
-userSchema.methods.comparePassword = async function comparePassword(
-  candidatePassword
-) {
-  return bcrypt.compare(candidatePassword, this.password);
-};
-
-userSchema.methods.toPublicJSON = function toPublicJSON() {
-  return {
-    _id: this._id,
-    name: this.name,
-    email: this.email,
-    username: this.username,
-    role: this.role,
-    studentId: this.studentId,
-    createdAt: this.createdAt,
-    updatedAt: this.updatedAt,
-  };
-};
 
 module.exports = mongoose.model("User", userSchema);

@@ -4,31 +4,22 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 
-const readingProgressRoutes = require(
-  "./routes/readingProgressRoutes"
-);
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const userManagementRoutes = require("./routes/userManagementRoutes");
+const readingProgressRoutes = require("./routes/readingProgressRoutes");
 const followRoutes = require("./routes/followRoutes");
-const notificationRoutes = require(
-  "./routes/notificationRoutes"
-);
+const notificationRoutes = require("./routes/notificationRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const shelfRoutes = require("./routes/shelfRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 const mediaRoutes = require("./routes/mediaRoutes");
-const recommendationRoutes = require(
-  "./routes/recommendationRoutes"
-);
-const readingGoalRoutes = require(
-  "./routes/readingGoalRoutes"
-);
+const recommendationRoutes = require("./routes/recommendationRoutes");
+const readingGoalRoutes = require("./routes/readingGoalRoutes");
 const adminRoutes = require("./routes/adminRoutes");
-const readingListRoutes = require(
-  "./routes/readingListRoutes"
-);
-const readingWrappedRoutes = require(
-  "./routes/readingWrappedRoutes"
-);
-const authRoutes = require("./routes/authRoutes");
+const readingListRoutes = require("./routes/readingListRoutes");
+const readingWrappedRoutes = require("./routes/readingWrappedRoutes");
 
 const app = express();
 
@@ -65,12 +56,15 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/admin/users", userManagementRoutes);
 app.use("/api/reading-progress", readingProgressRoutes);
 app.use("/api", followRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/shelves", shelfRoutes);
+app.use("/api/reviews", reviewRoutes);
 app.use("/api/readinglists", readingListRoutes);
 app.use("/api/reading-wrapped", readingWrappedRoutes);
 app.use("/api/media", mediaRoutes);
@@ -83,15 +77,10 @@ const startServer = async () => {
     await connectDB();
 
     app.listen(PORT, "0.0.0.0", () => {
-      console.log(
-        `Server is running on port ${PORT}`
-      );
+      console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {
-    console.error(
-      "Server could not start:",
-      error.message
-    );
+    console.error("Server could not start:", error.message);
     process.exit(1);
   }
 };

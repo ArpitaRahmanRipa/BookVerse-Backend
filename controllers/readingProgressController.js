@@ -5,6 +5,10 @@ const {
   createNotificationRecord,
 } = require("./notificationController");
 
+// Prevent two simultaneous reminder checks
+// for the same user.
+const reminderChecksInProgress = new Set();
+
 // ==============================
 // Create reading progress record
 // ==============================
@@ -327,23 +331,52 @@ const deleteReadingProgress = async (req, res) => {
 // ==============================
 
 const checkReadingReminders = async (req, res) => {
-  try {
-    const { userId } = req.params;
+  const { userId } = req.params;
 
+  // ==============================
+  // Validate user
+  // ==============================
+
+  if (!userId) {
+    return res.status(400).json({
+      message: "User ID is required",
+    });
+  }
+
+  // ==============================
+  // Prevent simultaneous checks
+  // ==============================
+
+  if (reminderChecksInProgress.has(userId)) {
+    return res.status(200).json({
+      message:
+        "Reading reminder check already in progress",
+      inactiveBooks: 0,
+      remindersCreated: 0,
+    });
+  }
+
+  reminderChecksInProgress.add(userId);
+
+  try {
     // Normal reminder threshold is 7 days.
-    // Can temporarily be changed in .env
-    // during development/testing.
     const reminderDays = Number(
       process.env.READING_REMINDER_DAYS || 7
     );
 
     const reminderCutoff = new Date(
       Date.now() -
-        reminderDays * 24 * 60 * 60 * 1000
+        reminderDays *
+          24 *
+          60 *
+          60 *
+          1000
     );
 
-    // Find books that are still active
-    // but have not been updated recently.
+    // ==============================
+    // Find inactive books
+    // ==============================
+
     const inactiveProgress =
       await ReadingProgress.find({
         userId,
@@ -362,20 +395,29 @@ const checkReadingReminders = async (req, res) => {
 
     let remindersCreated = 0;
 
-    // Prevent the same book from generating
-    // another reminder within 24 hours.
+    // ==============================
+    // Prevent repeat within 24 hours
+    // ==============================
+
     const duplicateCutoff = new Date(
       Date.now() -
-        24 * 60 * 60 * 1000
+        24 *
+          60 *
+          60 *
+          1000
     );
 
     for (const progress of inactiveProgress) {
+      const progressId =
+        progress._id.toString();
+
       const existingReminder =
         await Notification.findOne({
           recipientId: userId,
+
           type: "reading_reminder",
-          relatedId:
-            progress._id.toString(),
+
+          relatedId: progressId,
 
           createdAt: {
             $gte: duplicateCutoff,
@@ -386,19 +428,25 @@ const checkReadingReminders = async (req, res) => {
         continue;
       }
 
+      // ==============================
+      // Create Reminder
+      // ==============================
+
       await createNotificationRecord({
         recipientId: userId,
 
         type: "reading_reminder",
 
-        message: `You have not updated your reading progress for "${progress.bookTitle}" recently. Time to continue reading!`,
+        message:
+          `You have not updated your reading progress for "${progress.bookTitle}" recently. Time to continue reading!`,
 
-        relatedId:
-          progress._id.toString(),
+        relatedId: progressId,
 
-        relatedType: "reading_progress",
+        relatedType:
+          "reading_progress",
 
-        link: "/reading-progress",
+        link:
+          "/reading-progress",
       });
 
       remindersCreated += 1;
@@ -413,12 +461,25 @@ const checkReadingReminders = async (req, res) => {
 
       remindersCreated,
     });
+
   } catch (error) {
+
     return res.status(500).json({
       message:
         "Failed to check reading reminders",
-      error: error.message,
+
+      error:
+        error.message,
     });
+
+  } finally {
+
+    // VERY IMPORTANT:
+    // always release the lock
+    reminderChecksInProgress.delete(
+      userId
+    );
+
   }
 };
 
