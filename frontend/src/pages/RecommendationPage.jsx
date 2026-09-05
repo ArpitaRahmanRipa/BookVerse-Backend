@@ -5,7 +5,7 @@ import {
 
 import {
   generateRecommendations,
-  getUserRecommendations,
+  getMyRecommendations,
 } from "../services/recommendationApi";
 
 import {
@@ -34,6 +34,7 @@ const difficultyOptions = [
 export default function RecommendationPage() {
   const {
     user,
+    token,
   } = useAuth();
 
   const userId =
@@ -125,20 +126,15 @@ export default function RecommendationPage() {
   useEffect(() => {
     const loadHistory =
       async () => {
-        if (!userId) {
+        if (!userId || !token) {
           setLoading(false);
           return;
         }
 
-
         try {
           setLoading(true);
 
-
-          const result =
-            await getUserRecommendations(
-              userId
-            );
+          const result = await getMyRecommendations(token);
 
 
           const records =
@@ -177,7 +173,7 @@ export default function RecommendationPage() {
 
     loadHistory();
 
-  }, [userId]);
+  }, [userId, token]);
 
 
   // ==============================
@@ -206,7 +202,7 @@ export default function RecommendationPage() {
 
   const handleGenerate =
     async () => {
-      if (!userId) {
+      if (!userId || !token) {
         setMessage({
           type: "error",
 
@@ -239,6 +235,7 @@ export default function RecommendationPage() {
 
         const result =
           await generateRecommendations(
+            token,
             {
               userId,
 

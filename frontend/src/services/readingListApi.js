@@ -1,7 +1,6 @@
-const API_BASE_URL =
-  "http://127.0.0.1:9208/api/readinglists";
+import { API_BASE_URL as ROOT_API_URL } from "../config/api.js";
 
-
+const API_BASE_URL = `${ROOT_API_URL}/readinglists`;
 
 // ==========================================
 // GET ALL PUBLIC READING LISTS

@@ -1,17 +1,7 @@
 import axios from "axios";
+import { API_BASE_URL as ROOT_API_URL } from "../config/api.js";
 
-
-// ==========================================
-// API BASE URL
-// ==========================================
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://127.0.0.1:9208/api";
-
-const REVIEW_API_URL =
-  `${API_BASE_URL}/reviews`;
-
+const REVIEW_API_URL = `${ROOT_API_URL}/reviews`;
 
 // ==========================================
 // AUTH HEADER HELPER

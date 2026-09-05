@@ -1,6 +1,4 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://127.0.0.1:1548/api";
+import { API_BASE_URL } from "../config/api.js";
 
 const handleResponse = async (response) => {
   let data;
@@ -21,38 +19,53 @@ const handleResponse = async (response) => {
   return data;
 };
 
-export const generateRecommendations = async (
-  payload
-) => {
+const authHeaders = (token, withJson = false) => {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  if (withJson) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  return headers;
+};
+
+export const generateRecommendations = async (token, payload) => {
+  const response = await fetch(`${API_BASE_URL}/recommendations/generate`, {
+    method: "POST",
+    headers: authHeaders(token, true),
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+};
+
+export const getMyRecommendations = async (token) => {
+  const response = await fetch(`${API_BASE_URL}/recommendations/me`, {
+    headers: authHeaders(token),
+  });
+
+  return handleResponse(response);
+};
+
+export const getUserRecommendations = async (token, userId) => {
   const response = await fetch(
-    `${API_BASE_URL}/recommendations/generate`,
+    `${API_BASE_URL}/recommendations/user/${userId}`,
     {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
+      headers: authHeaders(token),
     }
   );
 
   return handleResponse(response);
 };
 
-export const getUserRecommendations = async (
-  userId
-) => {
+export const getSingleRecommendation = async (token, recommendationId) => {
   const response = await fetch(
-    `${API_BASE_URL}/recommendations/user/${userId}`
-  );
-
-  return handleResponse(response);
-};
-
-export const getSingleRecommendation = async (
-  recommendationId
-) => {
-  const response = await fetch(
-    `${API_BASE_URL}/recommendations/${recommendationId}`
+    `${API_BASE_URL}/recommendations/${recommendationId}`,
+    {
+      headers: authHeaders(token),
+    }
   );
 
   return handleResponse(response);

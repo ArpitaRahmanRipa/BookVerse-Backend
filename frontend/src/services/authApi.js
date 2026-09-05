@@ -1,7 +1,4 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://127.0.0.1:1436/api";
-
+import { API_BASE_URL } from "../config/api.js";
 
 const handleResponse = async (response) => {
   let data;
@@ -22,28 +19,33 @@ const handleResponse = async (response) => {
   return data;
 };
 
+const requestJson = async (url, options = {}) => {
+  let response;
+
+  try {
+    response = await fetch(url, options);
+  } catch {
+    throw new Error(
+      `Could not reach the BookVerse API at ${API_BASE_URL}. Make sure the backend is running on port 1548.`
+    );
+  }
+
+  return handleResponse(response);
+};
+
 
 // ==============================
 // Register
 // ==============================
 
-export const registerUser = async (
-  payload
-) => {
-  const response = await fetch(
-    `${API_BASE_URL}/auth/register`,
-    {
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify(payload),
-    }
-  );
-
-  return handleResponse(response);
+export const registerUser = async (payload) => {
+  return requestJson(`${API_BASE_URL}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 };
 
 
@@ -51,23 +53,14 @@ export const registerUser = async (
 // Login
 // ==============================
 
-export const loginUser = async (
-  payload
-) => {
-  const response = await fetch(
-    `${API_BASE_URL}/auth/login`,
-    {
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify(payload),
-    }
-  );
-
-  return handleResponse(response);
+export const loginUser = async (payload) => {
+  return requestJson(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 };
 
 
@@ -75,18 +68,10 @@ export const loginUser = async (
 // Current Logged-In User
 // ==============================
 
-export const getCurrentUser = async (
-  token
-) => {
-  const response = await fetch(
-    `${API_BASE_URL}/auth/me`,
-    {
-      headers: {
-        Authorization:
-          `Bearer ${token}`,
-      },
-    }
-  );
-
-  return handleResponse(response);
+export const getCurrentUser = async (token) => {
+  return requestJson(`${API_BASE_URL}/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
