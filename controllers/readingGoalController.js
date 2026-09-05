@@ -302,9 +302,15 @@ const deleteReadingGoal = async (req, res) => {
   }
 };
 
+const getMyReadingGoals = async (req, res) => {
+  req.params.userId = req.user.userId;
+  return getUserReadingGoals(req, res);
+};
+
 module.exports = {
   createReadingGoal,
   getUserReadingGoals,
+  getMyReadingGoals,
   getSingleReadingGoal,
   updateReadingGoal,
   deleteReadingGoal,

@@ -1,4 +1,4 @@
-const BookShelf = require("../models/BookShelf");
+const BookShelf = require("../models/bookShelf");
 
 const addBookToShelf = async (req, res) => {
   try {

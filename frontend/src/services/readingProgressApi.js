@@ -1,7 +1,4 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://127.0.0.1:1436/api";
-
+import { API_BASE_URL } from "../config/api.js";
 const handleResponse = async (response) => {
   let data;
 
@@ -120,6 +117,20 @@ export const deleteReadingProgress = async (
     `${API_BASE_URL}/reading-progress/${progressId}`,
     {
       method: "DELETE",
+    }
+  );
+
+  return handleResponse(response);
+};
+// Check whether the user has inactive reading
+// progress records that need reminders
+export const checkReadingReminders = async (
+  userId
+) => {
+  const response = await fetch(
+    `${API_BASE_URL}/reading-progress/user/${userId}/check-reminders`,
+    {
+      method: "POST",
     }
   );
 

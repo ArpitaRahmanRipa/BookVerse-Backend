@@ -5,31 +5,25 @@ const followSchema = new mongoose.Schema(
     userId: {
       type: String,
       required: true,
+      trim: true,
     },
 
     targetUserId: {
       type: String,
       required: true,
+      trim: true,
     },
 
     targetName: {
       type: String,
+      trim: true,
+      default: "",
     },
 
     targetUsername: {
       type: String,
-    },
-
-    favoriteGenres: {
-      type: [String],
-    },
-
-    booksRead: {
-      type: Number,
-    },
-
-    targetFollowers: {
-      type: Number,
+      trim: true,
+      default: "",
     },
   },
   {
@@ -37,6 +31,8 @@ const followSchema = new mongoose.Schema(
   }
 );
 
+// Prevent the same user from following
+// the same reader more than once.
 followSchema.index(
   {
     userId: 1,
@@ -47,4 +43,7 @@ followSchema.index(
   }
 );
 
-module.exports = mongoose.model("Follow", followSchema);
+module.exports = mongoose.model(
+  "Follow",
+  followSchema
+);

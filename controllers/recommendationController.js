@@ -212,8 +212,14 @@ const getSingleRecommendation = async (req, res) => {
   }
 };
 
+const getMyRecommendations = async (req, res) => {
+  req.params.userId = req.user.userId;
+  return getUserRecommendations(req, res);
+};
+
 module.exports = {
   generateRecommendations,
   getUserRecommendations,
+  getMyRecommendations,
   getSingleRecommendation,
 };

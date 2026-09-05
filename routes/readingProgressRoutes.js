@@ -8,27 +8,74 @@ const {
   addDiaryEntry,
   deleteDiaryEntry,
   deleteReadingProgress,
+  checkReadingReminders,
 } = require("../controllers/readingProgressController");
 
 const router = express.Router();
 
+// ==============================
+// Create reading progress
+// ==============================
+
 router.post("/", createReadingProgress);
 
-router.get("/user/:userId", getReadingProgress);
+// ==============================
+// Get all progress for one user
+// ==============================
 
-router.get("/:progressId", getSingleReadingProgress);
+router.get(
+  "/user/:userId",
+  getReadingProgress
+);
 
-router.put("/:progressId", updateReadingProgress);
+// ==============================
+// Check automatic reading reminders
+// ==============================
+
+router.post(
+  "/user/:userId/check-reminders",
+  checkReadingReminders
+);
+
+// ==============================
+// Get one reading progress record
+// ==============================
+
+router.get(
+  "/:progressId",
+  getSingleReadingProgress
+);
+
+// ==============================
+// Update reading progress
+// ==============================
+
+router.put(
+  "/:progressId",
+  updateReadingProgress
+);
+
+// ==============================
+// Add diary entry
+// ==============================
 
 router.post(
   "/:progressId/diary",
   addDiaryEntry
 );
 
+// ==============================
+// Delete diary entry
+// ==============================
+
 router.delete(
   "/:progressId/diary/:entryId",
   deleteDiaryEntry
 );
+
+// ==============================
+// Delete reading progress
+// ==============================
 
 router.delete(
   "/:progressId",

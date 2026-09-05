@@ -1,10 +1,11 @@
 const ReadingProgress = require("../models/ReadingProgress");
-const BookShelf = require("../models/BookShelf");
+const BookShelf = require("../models/bookShelf");
 const Follow = require("../models/Follow");
 const ProfileMedia = require("../models/ProfileMedia");
 const Recommendation = require("../models/Recommendation");
 const ReadingGoal = require("../models/ReadingGoal");
 const Category = require("../models/Category");
+const User = require("../models/User");
 
 const collectUniqueUserIds = async () => {
   const userIdSets = await Promise.all([
@@ -25,7 +26,7 @@ const collectUniqueUserIds = async () => {
 const getPlatformAnalytics = async (req, res) => {
   try {
     const [
-      uniqueUserIds,
+      totalRegisteredUsers,
       totalBooksSaved,
       totalReadingRecords,
       totalRecommendations,
@@ -34,7 +35,7 @@ const getPlatformAnalytics = async (req, res) => {
       ratedBooks,
       categories,
     ] = await Promise.all([
-      collectUniqueUserIds(),
+      User.countDocuments(),
       BookShelf.countDocuments(),
       ReadingProgress.countDocuments(),
       Recommendation.countDocuments(),
@@ -42,12 +43,15 @@ const getPlatformAnalytics = async (req, res) => {
       Follow.countDocuments(),
       ReadingProgress.find({
         rating: { $ne: null },
-      }).select("bookTitle rating userId updatedAt"),
-      Category.find({ isActive: true }).sort({
+      }).select(
+        "bookTitle rating userId updatedAt"
+      ),
+      Category.find({
+        isActive: true,
+      }).sort({
         name: 1,
       }),
     ]);
-
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -103,7 +107,7 @@ const getPlatformAnalytics = async (req, res) => {
     res.status(200).json({
       message: "Platform analytics fetched successfully",
       data: {
-        totalUsers: uniqueUserIds.length,
+        totalUsers: totalRegisteredUsers,
         totalBooksSaved:
           totalBooksSaved + totalReadingRecords,
         totalReviews: ratedBooks.length,

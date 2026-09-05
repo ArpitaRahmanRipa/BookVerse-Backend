@@ -1,59 +1,26 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://127.0.0.1:1548/api";
+import { API_BASE_URL, apiRequest } from "../config/api.js";
 
-const handleResponse = async (response) => {
-  let data;
-
-  try {
-    data = await response.json();
-  } catch {
-    data = {};
-  }
-
-  if (!response.ok) {
-    throw new Error(
-      data.message ||
-        `Request failed with status ${response.status}`
-    );
-  }
-
-  return data;
+export const generateRecommendations = async (token, payload) => {
+  return apiRequest(`${API_BASE_URL}/recommendations/generate`, {
+    token,
+    method: "POST",
+    body: payload,
+    json: true,
+  });
 };
 
-export const generateRecommendations = async (
-  payload
-) => {
-  const response = await fetch(
-    `${API_BASE_URL}/recommendations/generate`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    }
-  );
-
-  return handleResponse(response);
+export const getMyRecommendations = async (token) => {
+  return apiRequest(`${API_BASE_URL}/recommendations/me`, { token });
 };
 
-export const getUserRecommendations = async (
-  userId
-) => {
-  const response = await fetch(
-    `${API_BASE_URL}/recommendations/user/${userId}`
-  );
-
-  return handleResponse(response);
+export const getUserRecommendations = async (token, userId) => {
+  return apiRequest(`${API_BASE_URL}/recommendations/user/${userId}`, {
+    token,
+  });
 };
 
-export const getSingleRecommendation = async (
-  recommendationId
-) => {
-  const response = await fetch(
-    `${API_BASE_URL}/recommendations/${recommendationId}`
-  );
-
-  return handleResponse(response);
+export const getSingleRecommendation = async (token, recommendationId) => {
+  return apiRequest(`${API_BASE_URL}/recommendations/${recommendationId}`, {
+    token,
+  });
 };

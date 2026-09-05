@@ -1,74 +1,36 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://127.0.0.1:1436/api";
+import { API_BASE_URL, apiRequest } from "../config/api.js";
 
-const handleResponse = async (response) => {
-  let data;
-
-  try {
-    data = await response.json();
-  } catch {
-    data = {};
-  }
-
-  if (!response.ok) {
-    throw new Error(
-      data.message ||
-        `Request failed with status ${response.status}`
-    );
-  }
-
-  return data;
+export const getMyReadingGoals = async (token) => {
+  return apiRequest(`${API_BASE_URL}/reading-goals/me`, { token });
 };
 
-export const getUserReadingGoals = async (userId) => {
-  const response = await fetch(
-    `${API_BASE_URL}/reading-goals/user/${userId}`
-  );
-
-  return handleResponse(response);
+export const getUserReadingGoals = async (token, userId) => {
+  return apiRequest(`${API_BASE_URL}/reading-goals/user/${userId}`, {
+    token,
+  });
 };
 
-export const createReadingGoal = async (payload) => {
-  const response = await fetch(
-    `${API_BASE_URL}/reading-goals`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    }
-  );
-
-  return handleResponse(response);
+export const createReadingGoal = async (token, payload) => {
+  return apiRequest(`${API_BASE_URL}/reading-goals`, {
+    token,
+    method: "POST",
+    body: payload,
+    json: true,
+  });
 };
 
-export const updateReadingGoal = async (
-  goalId,
-  payload
-) => {
-  const response = await fetch(
-    `${API_BASE_URL}/reading-goals/${goalId}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    }
-  );
-
-  return handleResponse(response);
+export const updateReadingGoal = async (token, goalId, payload) => {
+  return apiRequest(`${API_BASE_URL}/reading-goals/${goalId}`, {
+    token,
+    method: "PUT",
+    body: payload,
+    json: true,
+  });
 };
 
-export const deleteReadingGoal = async (goalId) => {
-  const response = await fetch(
-    `${API_BASE_URL}/reading-goals/${goalId}`,
-    {
-      method: "DELETE",
-    }
-  );
-
-  return handleResponse(response);
+export const deleteReadingGoal = async (token, goalId) => {
+  return apiRequest(`${API_BASE_URL}/reading-goals/${goalId}`, {
+    token,
+    method: "DELETE",
+  });
 };
