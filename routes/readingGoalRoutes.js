@@ -3,24 +3,45 @@ const express = require("express");
 const {
   createReadingGoal,
   getUserReadingGoals,
+  getMyReadingGoals,
   getSingleReadingGoal,
   updateReadingGoal,
   deleteReadingGoal,
 } = require("../controllers/readingGoalController");
+const {
+  authenticate,
+  requireSelfOrAdmin,
+} = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.post("/", createReadingGoal);
+router.post("/", authenticate, createReadingGoal);
+
+router.get("/me", authenticate, getMyReadingGoals);
 
 router.get(
   "/user/:userId",
+  authenticate,
+  requireSelfOrAdmin("userId"),
   getUserReadingGoals
 );
 
-router.get("/:goalId", getSingleReadingGoal);
+router.get(
+  "/:goalId",
+  authenticate,
+  getSingleReadingGoal
+);
 
-router.put("/:goalId", updateReadingGoal);
+router.put(
+  "/:goalId",
+  authenticate,
+  updateReadingGoal
+);
 
-router.delete("/:goalId", deleteReadingGoal);
+router.delete(
+  "/:goalId",
+  authenticate,
+  deleteReadingGoal
+);
 
 module.exports = router;

@@ -4,327 +4,96 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 
-
-// ==============================
-// Route Imports
-// ==============================
-
-
-// Member 3 - Reading Progress & Diary
 const readingProgressRoutes = require(
   "./routes/readingProgressRoutes"
 );
-
-
-// Existing Follow Feature
-const followRoutes = require(
-  "./routes/followRoutes"
-);
-
-
-// Notifications
+const followRoutes = require("./routes/followRoutes");
 const notificationRoutes = require(
   "./routes/notificationRoutes"
 );
-
-
-// Report Feature
-const reportRoutes = require(
-  "./routes/reportRoutes"
-);
-
-
-// ==============================
-// Member 2 - Module 1 Feature 2
-// Book Search & Book Details
-// ==============================
-
-const bookRoutes = require(
-  "./routes/bookRoutes"
-);
-
-
-const shelfRoutes = require(
-  "./routes/shelfRoutes"
-);
-
-
-// ==============================
-// Member 4 Features
-// ==============================
-
-// Profile Picture & Media Upload
-const mediaRoutes = require(
-  "./routes/mediaRoutes"
-);
-
-
-// AI Book Recommendation Assistant
+const reportRoutes = require("./routes/reportRoutes");
+const bookRoutes = require("./routes/bookRoutes");
+const shelfRoutes = require("./routes/shelfRoutes");
+const mediaRoutes = require("./routes/mediaRoutes");
 const recommendationRoutes = require(
   "./routes/recommendationRoutes"
 );
-
-
-// Reading Goals and Challenge Tracking
 const readingGoalRoutes = require(
   "./routes/readingGoalRoutes"
 );
-
-
-// Admin Analytics and Category Management
-const adminRoutes = require(
-  "./routes/adminRoutes"
-);
-
-
-
-// ==============================
-// Member 2 - Module 2 Feature 2
-// Custom Reading Lists
-// ==============================
-
+const adminRoutes = require("./routes/adminRoutes");
 const readingListRoutes = require(
   "./routes/readingListRoutes"
 );
-
-
-
-// ==============================
-// Member 2 - Module 4 Feature 2
-// Yearly Reading Wrapped
-// ==============================
-
 const readingWrappedRoutes = require(
   "./routes/readingWrappedRoutes"
 );
-
-
-
-// ==============================
-// Create Express App
-// ==============================
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
+const PORT = process.env.PORT || 3000;
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+].filter(Boolean);
 
-// ==============================
-// Port
-// ==============================
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
 
-const PORT =
-  process.env.PORT || 9208;
-
-
-
-// ==============================
-// Middleware
-// ==============================
-
-app.use(cors());
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
-
-
-// ==============================
-// Test Route
-// ==============================
-
 app.get("/", (req, res) => {
-
   res.status(200).json({
-
     success: true,
-
-    message:
-      "BookVerse Backend API is running",
-
+    message: "BookVerse Backend API is running",
     port: PORT,
-
   });
-
 });
 
-
-
-// ==============================
-// Feature Routes
-// ==============================
-
-
-
-// Member 3 - Reading Progress
-
-app.use(
-  "/api/reading-progress",
-  readingProgressRoutes
-);
-
-
-
-// Follow Feature
-
-app.use(
-  "/api",
-  followRoutes
-);
-
-
-
-// Notifications
-
-app.use(
-  "/api/notifications",
-  notificationRoutes
-);
-
-
-
-// Reports
-
-app.use(
-  "/api/reports",
-  reportRoutes
-);
-
-
-
-// ==============================
-// Member 2 Features
-// ==============================
-
-
-// Book Search
-
-app.use(
-  "/api/books",
-  bookRoutes
-);
-
-
-// Shelves
-
-app.use(
-  "/api/shelves",
-  shelfRoutes
-);
-
-
-// Reading Lists
-
-app.use(
-  "/api/readinglists",
-  readingListRoutes
-);
-
-
-// Reading Wrapped
-
-app.use(
-  "/api/reading-wrapped",
-  readingWrappedRoutes
-);
-
-
-
-// ==============================
-// Member 4 Features
-// ==============================
-
-
-// Media Upload
-
-app.use(
-  "/api/media",
-  mediaRoutes
-);
-
-
-// Recommendations
-
-app.use(
-  "/api/recommendations",
-  recommendationRoutes
-);
-
-
-// Reading Goals
-
-app.use(
-  "/api/reading-goals",
-  readingGoalRoutes
-);
-
-
-// Admin
-
-app.use(
-  "/api/admin",
-  adminRoutes
-);
-
-
-
-// ==============================
-// Start Server
-// ==============================
+app.use("/api/auth", authRoutes);
+app.use("/api/reading-progress", readingProgressRoutes);
+app.use("/api", followRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/books", bookRoutes);
+app.use("/api/shelves", shelfRoutes);
+app.use("/api/readinglists", readingListRoutes);
+app.use("/api/reading-wrapped", readingWrappedRoutes);
+app.use("/api/media", mediaRoutes);
+app.use("/api/recommendations", recommendationRoutes);
+app.use("/api/reading-goals", readingGoalRoutes);
+app.use("/api/admin", adminRoutes);
 
 const startServer = async () => {
-
   try {
-
     await connectDB();
 
-
-    app.listen(PORT, () => {
-
-
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(
-        `Server is running on http://127.0.0.1:${PORT}`
+        `Server is running on port ${PORT}`
       );
-
-
-      console.log(
-        `Book Search API: http://127.0.0.1:${PORT}/api/books`
-      );
-
-
-      console.log(
-        `Reading Lists API: http://127.0.0.1:${PORT}/api/readinglists`
-      );
-
-
-      console.log(
-        `Reading Wrapped API: http://127.0.0.1:${PORT}/api/reading-wrapped`
-      );
-
-
-      console.log(
-        `Report API: http://127.0.0.1:${PORT}/api/reports`
-      );
-
-
     });
-
-
-  } catch(error) {
-
-
+  } catch (error) {
     console.error(
       "Server could not start:",
       error.message
     );
-
-
     process.exit(1);
-
-
   }
-
 };
-
-
-// Start Backend
 
 startServer();
