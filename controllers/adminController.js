@@ -1,5 +1,5 @@
 const ReadingProgress = require("../models/ReadingProgress");
-const BookShelf = require("../models/BookShelf");
+const BookShelf = require("../models/bookShelf");
 const Follow = require("../models/Follow");
 const ProfileMedia = require("../models/ProfileMedia");
 const Recommendation = require("../models/Recommendation");
