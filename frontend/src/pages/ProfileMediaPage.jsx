@@ -20,7 +20,7 @@ const defaultListForm = {
 
 
 export default function ProfileMediaPage() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const userId = user?.userId;
 
@@ -59,7 +59,7 @@ export default function ProfileMediaPage() {
 
   useEffect(() => {
     const loadMedia = async () => {
-      if (!userId) {
+      if (!userId || !token) {
         setLoading(false);
         return;
       }
@@ -67,8 +67,7 @@ export default function ProfileMediaPage() {
       try {
         setLoading(true);
 
-        const result =
-          await getUserMedia(userId);
+        const result = await getUserMedia(token, userId);
 
         setMedia(result.data);
 
@@ -92,7 +91,7 @@ export default function ProfileMediaPage() {
 
     loadMedia();
 
-  }, [userId]);
+  }, [userId, token]);
 
 
   // ==============================
@@ -125,7 +124,7 @@ export default function ProfileMediaPage() {
 
   const handleProfileUpload =
     async () => {
-      if (!userId) {
+      if (!userId || !token) {
         setMessage({
           type: "error",
           text:
@@ -152,6 +151,7 @@ export default function ProfileMediaPage() {
 
         const result =
           await uploadProfilePicture(
+            token,
             userId,
             profileFile
           );
@@ -184,7 +184,7 @@ export default function ProfileMediaPage() {
 
   const handleProfileRemove =
     async () => {
-      if (!userId) {
+      if (!userId || !token) {
         return;
       }
 
@@ -195,6 +195,7 @@ export default function ProfileMediaPage() {
 
         const result =
           await removeProfilePicture(
+            token,
             userId
           );
 
@@ -224,7 +225,7 @@ export default function ProfileMediaPage() {
 
   const handleListCoverUpload =
     async () => {
-      if (!userId) {
+      if (!userId || !token) {
         setMessage({
           type: "error",
           text:
@@ -255,6 +256,7 @@ export default function ProfileMediaPage() {
 
         const result =
           await uploadListCover(
+            token,
             userId,
             listForm.file,
             listForm.listId.trim(),
@@ -291,7 +293,7 @@ export default function ProfileMediaPage() {
 
   const handleListCoverRemove =
     async (listId) => {
-      if (!userId) {
+      if (!userId || !token) {
         return;
       }
 
@@ -302,6 +304,7 @@ export default function ProfileMediaPage() {
 
         const result =
           await removeListCover(
+            token,
             userId,
             listId
           );

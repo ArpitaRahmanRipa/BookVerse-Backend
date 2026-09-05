@@ -1,72 +1,26 @@
-import { API_BASE_URL } from "../config/api.js";
-
-const handleResponse = async (response) => {
-  let data;
-
-  try {
-    data = await response.json();
-  } catch {
-    data = {};
-  }
-
-  if (!response.ok) {
-    throw new Error(
-      data.message ||
-        `Request failed with status ${response.status}`
-    );
-  }
-
-  return data;
-};
-
-const authHeaders = (token, withJson = false) => {
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-
-  if (withJson) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  return headers;
-};
+import { API_BASE_URL, apiRequest } from "../config/api.js";
 
 export const generateRecommendations = async (token, payload) => {
-  const response = await fetch(`${API_BASE_URL}/recommendations/generate`, {
+  return apiRequest(`${API_BASE_URL}/recommendations/generate`, {
+    token,
     method: "POST",
-    headers: authHeaders(token, true),
-    body: JSON.stringify(payload),
+    body: payload,
+    json: true,
   });
-
-  return handleResponse(response);
 };
 
 export const getMyRecommendations = async (token) => {
-  const response = await fetch(`${API_BASE_URL}/recommendations/me`, {
-    headers: authHeaders(token),
-  });
-
-  return handleResponse(response);
+  return apiRequest(`${API_BASE_URL}/recommendations/me`, { token });
 };
 
 export const getUserRecommendations = async (token, userId) => {
-  const response = await fetch(
-    `${API_BASE_URL}/recommendations/user/${userId}`,
-    {
-      headers: authHeaders(token),
-    }
-  );
-
-  return handleResponse(response);
+  return apiRequest(`${API_BASE_URL}/recommendations/user/${userId}`, {
+    token,
+  });
 };
 
 export const getSingleRecommendation = async (token, recommendationId) => {
-  const response = await fetch(
-    `${API_BASE_URL}/recommendations/${recommendationId}`,
-    {
-      headers: authHeaders(token),
-    }
-  );
-
-  return handleResponse(response);
+  return apiRequest(`${API_BASE_URL}/recommendations/${recommendationId}`, {
+    token,
+  });
 };

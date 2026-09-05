@@ -45,6 +45,7 @@ const statusStyles = {
 export default function ReadingGoalsPage() {
   const {
     user,
+    token,
   } = useAuth();
 
   const userId =
@@ -112,7 +113,7 @@ export default function ReadingGoalsPage() {
   useEffect(() => {
     const loadGoals =
       async () => {
-        if (!userId) {
+        if (!userId || !token) {
           setLoading(false);
           return;
         }
@@ -120,10 +121,7 @@ export default function ReadingGoalsPage() {
         try {
           setLoading(true);
 
-          const result =
-            await getUserReadingGoals(
-              userId
-            );
+          const result = await getUserReadingGoals(token, userId);
 
           setGoals(
             result.data || []
@@ -150,7 +148,7 @@ export default function ReadingGoalsPage() {
 
     loadGoals();
 
-  }, [userId]);
+  }, [userId, token]);
 
 
   // ==============================
@@ -179,7 +177,7 @@ export default function ReadingGoalsPage() {
 
   const handleCreateGoal =
     async () => {
-      if (!userId) {
+      if (!userId || !token) {
         setMessage({
           type: "error",
 
@@ -240,7 +238,7 @@ export default function ReadingGoalsPage() {
 
 
         const result =
-          await createReadingGoal({
+          await createReadingGoal(token, {
             userId,
 
             title:
@@ -322,9 +320,7 @@ export default function ReadingGoalsPage() {
         setWorking(true);
 
 
-        await deleteReadingGoal(
-          goalId
-        );
+        await deleteReadingGoal(token, goalId);
 
 
         setGoals(

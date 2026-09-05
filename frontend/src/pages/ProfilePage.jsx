@@ -87,7 +87,7 @@ export default function ProfilePage() {
   // ==============================
 
   useEffect(() => {
-    if (!user?.userId) {
+    if (!user?.userId || !token) {
       return;
     }
 
@@ -95,6 +95,7 @@ export default function ProfilePage() {
       try {
         const result =
           await getUserMedia(
+            token,
             user.userId
           );
 
@@ -112,7 +113,7 @@ export default function ProfilePage() {
 
     loadMedia();
 
-  }, [user?.userId]);
+  }, [user?.userId, token]);
 
 
   // ==============================
