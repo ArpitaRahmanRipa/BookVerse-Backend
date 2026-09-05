@@ -1,38 +1,8 @@
 const ProfileMedia = require("../models/ProfileMedia");
 const {
-  cloudinary,
-  isCloudinaryConfigured,
-} = require("../config/cloudinary");
-
-const uploadToCloudinary = (fileBuffer, folder) => {
-  return new Promise((resolve, reject) => {
-    const uploadStream =
-      cloudinary.uploader.upload_stream(
-        {
-          folder: `bookverse/${folder}`,
-          resource_type: "image",
-        },
-        (error, result) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          resolve(result);
-        }
-      );
-
-    uploadStream.end(fileBuffer);
-  });
-};
-
-const deleteFromCloudinary = async (publicId) => {
-  if (!publicId) {
-    return;
-  }
-
-  await cloudinary.uploader.destroy(publicId);
-};
+  uploadImage,
+  deleteImage,
+} = require("../config/mediaStorage");
 
 const getOrCreateProfileMedia = async (userId) => {
   let profileMedia = await ProfileMedia.findOne({
@@ -68,13 +38,6 @@ const getUserMedia = async (req, res) => {
 
 const uploadProfilePicture = async (req, res) => {
   try {
-    if (!isCloudinaryConfigured()) {
-      return res.status(503).json({
-        message:
-          "Cloudinary is not configured. Add CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET to your .env file.",
-      });
-    }
-
     if (!req.file) {
       return res.status(400).json({
         message: "Profile picture file is required",
@@ -86,14 +49,14 @@ const uploadProfilePicture = async (req, res) => {
     );
 
     if (profileMedia.profilePicturePublicId) {
-      await deleteFromCloudinary(
-        profileMedia.profilePicturePublicId
-      );
+      await deleteImage(profileMedia.profilePicturePublicId);
     }
 
-    const uploadResult = await uploadToCloudinary(
+    const uploadResult = await uploadImage(
       req.file.buffer,
-      "profile-pictures"
+      "profile-pictures",
+      req.params.userId,
+      req.file.originalname
     );
 
     profileMedia.profilePictureUrl = uploadResult.secure_url;
@@ -127,11 +90,7 @@ const removeProfilePicture = async (req, res) => {
     }
 
     if (profileMedia.profilePicturePublicId) {
-      if (isCloudinaryConfigured()) {
-        await deleteFromCloudinary(
-          profileMedia.profilePicturePublicId
-        );
-      }
+      await deleteImage(profileMedia.profilePicturePublicId);
 
       profileMedia.profilePictureUrl = "";
       profileMedia.profilePicturePublicId = "";
@@ -158,13 +117,6 @@ const removeProfilePicture = async (req, res) => {
 
 const uploadListCover = async (req, res) => {
   try {
-    if (!isCloudinaryConfigured()) {
-      return res.status(503).json({
-        message:
-          "Cloudinary is not configured. Add CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET to your .env file.",
-      });
-    }
-
     if (!req.file) {
       return res.status(400).json({
         message: "List cover image file is required",
@@ -188,12 +140,14 @@ const uploadListCover = async (req, res) => {
     );
 
     if (existingCover?.publicId) {
-      await deleteFromCloudinary(existingCover.publicId);
+      await deleteImage(existingCover.publicId);
     }
 
-    const uploadResult = await uploadToCloudinary(
+    const uploadResult = await uploadImage(
       req.file.buffer,
-      "list-covers"
+      "list-covers",
+      req.params.userId,
+      req.file.originalname
     );
 
     const coverData = {
@@ -247,8 +201,8 @@ const removeListCover = async (req, res) => {
       });
     }
 
-    if (coverEntry.publicId && isCloudinaryConfigured()) {
-      await deleteFromCloudinary(coverEntry.publicId);
+    if (coverEntry.publicId) {
+      await deleteImage(coverEntry.publicId);
     }
 
     profileMedia.listCoverImages =
