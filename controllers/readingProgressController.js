@@ -1,6 +1,18 @@
 const ReadingProgress = require("../models/ReadingProgress");
+const Notification = require("../models/Notification");
 
+const {
+  createNotificationRecord,
+} = require("./notificationController");
+
+// Prevent two simultaneous reminder checks
+// for the same user.
+const reminderChecksInProgress = new Set();
+
+// ==============================
 // Create reading progress record
+// ==============================
+
 const createReadingProgress = async (req, res) => {
   try {
     const {
@@ -57,12 +69,17 @@ const createReadingProgress = async (req, res) => {
   }
 };
 
-// Get all progress records of a user
+// ==============================
+// Get all progress records of user
+// ==============================
+
 const getReadingProgress = async (req, res) => {
   try {
     const progressList = await ReadingProgress.find({
       userId: req.params.userId,
-    }).sort({ updatedAt: -1 });
+    }).sort({
+      updatedAt: -1,
+    });
 
     res.status(200).json({
       message:
@@ -77,8 +94,14 @@ const getReadingProgress = async (req, res) => {
   }
 };
 
-// Get one progress record
-const getSingleReadingProgress = async (req, res) => {
+// ==============================
+// Get one reading progress record
+// ==============================
+
+const getSingleReadingProgress = async (
+  req,
+  res
+) => {
   try {
     const progress = await ReadingProgress.findById(
       req.params.progressId
@@ -103,7 +126,10 @@ const getSingleReadingProgress = async (req, res) => {
   }
 };
 
+// ==============================
 // Update reading progress
+// ==============================
+
 const updateReadingProgress = async (req, res) => {
   try {
     const progress = await ReadingProgress.findById(
@@ -177,10 +203,17 @@ const updateReadingProgress = async (req, res) => {
   }
 };
 
+// ==============================
 // Add diary entry
+// ==============================
+
 const addDiaryEntry = async (req, res) => {
   try {
-    const { note, pageNumber, visibility } = req.body;
+    const {
+      note,
+      pageNumber,
+      visibility,
+    } = req.body;
 
     if (!note) {
       return res.status(400).json({
@@ -221,7 +254,10 @@ const addDiaryEntry = async (req, res) => {
   }
 };
 
+// ==============================
 // Delete diary entry
+// ==============================
+
 const deleteDiaryEntry = async (req, res) => {
   try {
     const progress = await ReadingProgress.findById(
@@ -260,7 +296,10 @@ const deleteDiaryEntry = async (req, res) => {
   }
 };
 
+// ==============================
 // Delete reading progress record
+// ==============================
+
 const deleteReadingProgress = async (req, res) => {
   try {
     const deletedProgress =
@@ -287,6 +326,167 @@ const deleteReadingProgress = async (req, res) => {
   }
 };
 
+// ==============================
+// Check reading reminders
+// ==============================
+
+const checkReadingReminders = async (req, res) => {
+  const { userId } = req.params;
+
+  // ==============================
+  // Validate user
+  // ==============================
+
+  if (!userId) {
+    return res.status(400).json({
+      message: "User ID is required",
+    });
+  }
+
+  // ==============================
+  // Prevent simultaneous checks
+  // ==============================
+
+  if (reminderChecksInProgress.has(userId)) {
+    return res.status(200).json({
+      message:
+        "Reading reminder check already in progress",
+      inactiveBooks: 0,
+      remindersCreated: 0,
+    });
+  }
+
+  reminderChecksInProgress.add(userId);
+
+  try {
+    // Normal reminder threshold is 7 days.
+    const reminderDays = Number(
+      process.env.READING_REMINDER_DAYS || 7
+    );
+
+    const reminderCutoff = new Date(
+      Date.now() -
+        reminderDays *
+          24 *
+          60 *
+          60 *
+          1000
+    );
+
+    // ==============================
+    // Find inactive books
+    // ==============================
+
+    const inactiveProgress =
+      await ReadingProgress.find({
+        userId,
+
+        status: {
+          $in: [
+            "Currently Reading",
+            "Paused",
+          ],
+        },
+
+        updatedAt: {
+          $lte: reminderCutoff,
+        },
+      });
+
+    let remindersCreated = 0;
+
+    // ==============================
+    // Prevent repeat within 24 hours
+    // ==============================
+
+    const duplicateCutoff = new Date(
+      Date.now() -
+        24 *
+          60 *
+          60 *
+          1000
+    );
+
+    for (const progress of inactiveProgress) {
+      const progressId =
+        progress._id.toString();
+
+      const existingReminder =
+        await Notification.findOne({
+          recipientId: userId,
+
+          type: "reading_reminder",
+
+          relatedId: progressId,
+
+          createdAt: {
+            $gte: duplicateCutoff,
+          },
+        });
+
+      if (existingReminder) {
+        continue;
+      }
+
+      // ==============================
+      // Create Reminder
+      // ==============================
+
+      await createNotificationRecord({
+        recipientId: userId,
+
+        type: "reading_reminder",
+
+        message:
+          `You have not updated your reading progress for "${progress.bookTitle}" recently. Time to continue reading!`,
+
+        relatedId: progressId,
+
+        relatedType:
+          "reading_progress",
+
+        link:
+          "/reading-progress",
+      });
+
+      remindersCreated += 1;
+    }
+
+    return res.status(200).json({
+      message:
+        "Reading reminder check completed",
+
+      inactiveBooks:
+        inactiveProgress.length,
+
+      remindersCreated,
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      message:
+        "Failed to check reading reminders",
+
+      error:
+        error.message,
+    });
+
+  } finally {
+
+    // VERY IMPORTANT:
+    // always release the lock
+    reminderChecksInProgress.delete(
+      userId
+    );
+
+  }
+};
+
+// ==============================
+// Export controller functions
+// ==============================
+
 module.exports = {
   createReadingProgress,
   getReadingProgress,
@@ -295,4 +495,5 @@ module.exports = {
   addDiaryEntry,
   deleteDiaryEntry,
   deleteReadingProgress,
+  checkReadingReminders,
 };

@@ -3,11 +3,16 @@ const multer = require("multer");
 
 const {
   getUserMedia,
+  getMyMedia,
   uploadProfilePicture,
   removeProfilePicture,
   uploadListCover,
   removeListCover,
 } = require("../controllers/mediaController");
+const {
+  authenticate,
+  requireSelfOrAdmin,
+} = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -26,27 +31,41 @@ const upload = multer({
   },
 });
 
-router.get("/user/:userId", getUserMedia);
+router.get("/me", authenticate, getMyMedia);
+router.get(
+  "/user/:userId",
+  authenticate,
+  requireSelfOrAdmin("userId"),
+  getUserMedia
+);
 
 router.post(
   "/profile/:userId",
+  authenticate,
+  requireSelfOrAdmin("userId"),
   upload.single("profilePicture"),
   uploadProfilePicture
 );
 
 router.delete(
   "/profile/:userId",
+  authenticate,
+  requireSelfOrAdmin("userId"),
   removeProfilePicture
 );
 
 router.post(
   "/list-cover/:userId",
+  authenticate,
+  requireSelfOrAdmin("userId"),
   upload.single("listCover"),
   uploadListCover
 );
 
 router.delete(
   "/list-cover/:userId/:listId",
+  authenticate,
+  requireSelfOrAdmin("userId"),
   removeListCover
 );
 

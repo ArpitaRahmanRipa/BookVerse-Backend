@@ -4,145 +4,92 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 
-// ==============================
-// Route imports
-// ==============================
-
-// Member 3 - Reading Progress & Diary
-const readingProgressRoutes = require(
-  "./routes/readingProgressRoutes"
-);
-
-// Existing Follow feature
-const followRoutes = require(
-  "./routes/followRoutes"
-);
-
-// Future integrations:
-//
-// Member 1:
-// const dashboardRoutes = require("./routes/dashboardRoutes");
-//
-// Member 2 - Book Search & Book Details
-const bookRoutes = require(
-  "./routes/bookRoutes"
-);
-
-const shelfRoutes = require(
-  "./routes/shelfRoutes"
-);
-
-// Member 4 - Profile Picture & Media Upload
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const userManagementRoutes = require("./routes/userManagementRoutes");
+const readingProgressRoutes = require("./routes/readingProgressRoutes");
+const followRoutes = require("./routes/followRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const reportRoutes = require("./routes/reportRoutes");
+const bookRoutes = require("./routes/bookRoutes");
+const shelfRoutes = require("./routes/shelfRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 const mediaRoutes = require("./routes/mediaRoutes");
-
-// Member 4 - AI Book Recommendation Assistant
-const recommendationRoutes = require(
-  "./routes/recommendationRoutes"
-);
-
-// Member 4 - Reading Goals and Challenge Tracking
-const readingGoalRoutes = require(
-  "./routes/readingGoalRoutes"
-);
-
-// Member 4 - Admin Analytics and Category Management
+const recommendationRoutes = require("./routes/recommendationRoutes");
+const readingGoalRoutes = require("./routes/readingGoalRoutes");
 const adminRoutes = require("./routes/adminRoutes");
-
+const readingListRoutes = require("./routes/readingListRoutes");
+const readingWrappedRoutes = require("./routes/readingWrappedRoutes");
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+].filter(Boolean);
 
-// ==============================
-// Middleware
-// ==============================
+const isLocalDevOrigin = (origin) =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
 
-app.use(cors());
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        isLocalDevOrigin(origin)
+      ) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json());
-
-
-// ==============================
-// Test route
-// ==============================
 
 app.get("/", (req, res) => {
   res.status(200).json({
+    success: true,
     message: "BookVerse Backend API is running",
     port: PORT,
   });
 });
 
-
-// ==============================
-// Feature routes
-// ==============================
-
-// Member 3 - Reading Progress & Diary
-app.use(
-  "/api/reading-progress",
-  readingProgressRoutes
-);
-
-// Existing Follow feature
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/admin/users", userManagementRoutes);
+app.use("/api/reading-progress", readingProgressRoutes);
 app.use("/api", followRoutes);
-
-
-// Future integrations:
-//
-// Member 1:
-// app.use("/api/dashboard", dashboardRoutes);
-//
-// Member 2 - Book Search & Book Details
-app.use(
-  "/api/books",
-  bookRoutes
-);
-
-// Temporary shelf integration.
-// Member 1 may later reuse/replace this.
-app.use(
-  "/api/shelves",
-  shelfRoutes
-);
-// Member 4 - Profile Picture & Media Upload
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/books", bookRoutes);
+app.use("/api/shelves", shelfRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/readinglists", readingListRoutes);
+app.use("/api/reading-wrapped", readingWrappedRoutes);
 app.use("/api/media", mediaRoutes);
-
-// Member 4 - AI Book Recommendation Assistant
-app.use(
-  "/api/recommendations",
-  recommendationRoutes
-);
-
-// Member 4 - Reading Goals and Challenge Tracking
-app.use(
-  "/api/reading-goals",
-  readingGoalRoutes
-);
-
-// Member 4 - Admin Analytics and Category Management
+app.use("/api/recommendations", recommendationRoutes);
+app.use("/api/reading-goals", readingGoalRoutes);
 app.use("/api/admin", adminRoutes);
-
-
-// ==============================
-// Start server
-// ==============================
 
 const startServer = async () => {
   try {
     await connectDB();
 
-    app.listen(PORT, () => {
-      console.log(
-        `Server is running on http://127.0.0.1:${PORT}`
-      );
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {
-    console.error(
-      "Server could not start:",
-      error.message
-    );
-
+    console.error("Server could not start:", error.message);
     process.exit(1);
   }
 };

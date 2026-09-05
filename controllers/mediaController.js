@@ -270,8 +270,14 @@ const removeListCover = async (req, res) => {
   }
 };
 
+const getMyMedia = async (req, res) => {
+  req.params.userId = req.user.userId;
+  return getUserMedia(req, res);
+};
+
 module.exports = {
   getUserMedia,
+  getMyMedia,
   uploadProfilePicture,
   removeProfilePicture,
   uploadListCover,
