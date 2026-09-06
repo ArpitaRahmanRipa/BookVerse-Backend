@@ -1,6 +1,6 @@
 const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
+const cors = require("cors");//frontend and backend are separate.
+require("dotenv").config();//load.env
 
 const connectDB = require("./config/db");
 
@@ -29,10 +29,10 @@ const userManagementRoutes = require(
 // Member 3 - Reading Progress & Diary
 const readingProgressRoutes = require(
   "./routes/readingProgressRoutes"
-);
+);//Bring the Reading Progress router into this main server
 
 
-// Existing Follow Feature
+// Follow Feature
 const followRoutes = require(
   "./routes/followRoutes"
 );
@@ -140,17 +140,17 @@ const PORT =
 // Middleware
 // ==============================
 
-app.use(cors());
+app.use(cors());//Allows cross-origin frontend requests.
 
-app.use(express.json());
+app.use(express.json());//It lets Express understand JSON request bodies.
 
 
 
 // ==============================
-// Test Route
+// Test Route(bckend run hoy kina dekhte)
 // ==============================
 
-app.get("/", (req, res) => {
+app.get("/", (req, res) => { //GET /
 
   res.status(200).json({
 
